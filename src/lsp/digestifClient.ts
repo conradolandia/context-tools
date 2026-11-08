@@ -34,6 +34,8 @@ export interface DigestifClientHandle {
   stop(): Promise<void>;
   dispose(): void;
   lastEnv(): DigestifEnvOk | undefined;
+  /** True when the DigestiF LanguageClient is running (optional outline enrichment). */
+  isRunning(): boolean;
 }
 
 class SafeLanguageClient extends LanguageClient {
@@ -306,5 +308,6 @@ export function createDigestifClient(options: {
       void stopClient();
     },
     lastEnv: () => lastOk,
+    isRunning: () => startSucceeded && client?.state === State.Running,
   };
 }
