@@ -533,6 +533,10 @@ function refineForwardMidPageHit(
  * raw `--find` hit matches a different line (`l >=` / float order). Otherwise
  * keep the raw mid-page hit.
  *
+ * Edge-band: when the raw hit is a different line (`l >=`) but this page has a
+ * non-edge exact file+line box, prefer that before page N±1 / nearby (footer
+ * `l >=` must not jump to later itemize text on N+1).
+ *
  * Same-line candidates come from parsing the `.synctex` file (not mtx API).
  * Raw records are often TeX sp; convert to `--find` points before compare.
  * `--find` and synctex boxes share top-down space after unit scale.
@@ -624,6 +628,37 @@ export function refineForwardHit(
       baseDiag,
     );
   }
+
+  // Edge-band `--find` can still be the wrong source line: mtx uses `l >=`, and
+  // synctex file order may emit a later line's footer box before the requested
+  // line's mid-page box. Prefer an exact file+line non-edge box on this page
+  // before N±1 / nearby (otherwise nearby on N+1 paints later itemize text).
+  // Use vertical proximity (not strict box equality): test/mtx hits often share
+  // the edge band without matching ury/llx exactly.
+  const exactLineNearHit = boxes.some((b) => {
+    if (
+      b.linenumber !== line ||
+      !synctexFilenamesMatch(b.filename, sourceFile)
+    ) {
+      return false;
+    }
+    const mapped = synctexBoxToFindResult(b, hit.page);
+    const boxCy = hitVerticalCenter(mapped);
+    return Math.abs(boxCy - hitCy) <= Math.max(24, band);
+  });
+  const hasNonEdgeExact = sameLineBoxes.some((b) => !b.inEdge && !b.oversized);
+  if (!exactLineNearHit && hasNonEdgeExact) {
+    return refineForwardMidPageHit(
+      boxes,
+      sourceFile,
+      line,
+      hit,
+      pageHeight,
+      pageWidth,
+      baseDiag,
+    );
+  }
+
   const near = {
     x: (hit.llx + hit.urx) / 2,
     y: hitCy,
