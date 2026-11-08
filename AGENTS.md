@@ -13,6 +13,7 @@ src/viewer/                   PDF webview panel, range server, PDF.js worker
 src/synctex/                  mtxrun synctex CLI, box parse, coordinate mapping
 src/lsp/                      DigestiF launch, client, env (DIGESTIF_TEXMF)
 src/project/                  Root file, structure scan, path resolve, Project TreeView
+src/outline/                  Document structure (stock head scan + optional DigestiF title enrich)
 src/projectManager/           New Project Structure wizard
 src/links/                    Document links + figure hover
 src/folding/                  \start…/\stop… folding + mismatch diagnostics
@@ -23,12 +24,12 @@ syntaxes/                     TextMate grammar + keyword snapshot
 scripts/                      generate-context-keywords, digestif handshake
 ```
 
-Build path: `buildController` → `spawnContextBuild` → artifact gate → viewer reload. SyncTeX uses the last gated PDF + `.synctex` pair. DigestiF starts fire-and-forget on activate; build never awaits it.
+Build path: `buildController` → `spawnContextBuild` → artifact gate → viewer reload. SyncTeX uses the last gated PDF + `.synctex` pair. DigestiF starts fire-and-forget on activate; build / Document structure never await it.
 
 ## Invariants
 
 1. **stdin ignore on `context` spawn.** Always `stdio: ['ignore', 'pipe', 'pipe']` (`src/build/spawnContext.ts`). An open stdin pipe can hang LuaMetaTeX. POSIX builds also use `detached: true` so cancel can signal the process group (`context` + `luametatex`).
-2. **DigestiF must not block build.** Launch is async; failures log to the DigestiF channel. Build / preview / SyncTeX proceed regardless.
+2. **DigestiF must not block build or Document structure.** Launch is async; failures log to the DigestiF channel. Build / preview / SyncTeX / outline scan proceed regardless. DigestiF titles are optional enrichment only.
 3. **Language id `context` for DigestiF ConTeXt mode.** DigestiF maps `tex`/`latex` → LaTeX tags.
 4. **Do not claim `*.tex` globally** in `contributes.languages`. Offer workspace `files.associations` via the existing prompt only.
 5. **LaTeX Workshop conflict: soft-warn only.** Never auto-disable without the user’s chosen action. Skip the modal in `ExtensionMode.Development`.
@@ -41,7 +42,7 @@ Build path: `buildController` → `spawnContextBuild` → artifact gate → view
 npm run lint && npm test
 ```
 
-Relevant unit areas: `buildDigestifIsolation`, `latexWorkshopConflict`, `digestif*`, `mtxSynctex`, `projectModel`, `parseLog`, grammar fixtures under `src/test/grammar/`. Optional: `CONTEXT_ROOT=… npm run handshake:context`.
+Relevant unit areas: `buildDigestifIsolation`, `latexWorkshopConflict`, `digestif*`, `mtxSynctex`, `projectModel`, `headScan`, `outlineAggregate`, `parseLog`, grammar fixtures under `src/test/grammar/`. Optional: `CONTEXT_ROOT=… npm run handshake:context`.
 
 ## Caution
 

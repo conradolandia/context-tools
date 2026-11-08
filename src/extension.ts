@@ -18,6 +18,8 @@ import {
   publishFoldDiagnostics,
 } from './folding/startStopFolding';
 import { registerProjectView } from './project/projectTree';
+import { registerDocumentOutline } from './outline/outlineTree';
+import { registerOutlineSymbols } from './outline/outlineSymbols';
 import { registerProjectManager } from './projectManager/projectManagerPanel';
 import { refreshCommandKeywords } from './syntax/refreshKeywords';
 import { maybeWarnLatexWorkshopConflict } from './compat/latexWorkshopConflict';
@@ -48,7 +50,7 @@ import {
 import { registerBuildModesUi } from './extension/buildModesCommands';
 
 /** Bump when shipping a SyncTeX/viewer/LSP/diagnostics/project-view behavior change users must verify in Output. */
-export const BUILD_ID = 'synctex-edge-exact-b';
+export const BUILD_ID = 'document-outline-a';
 
 export function activate(context: vscode.ExtensionContext): void {
   runtime.extensionContext = context;
@@ -206,6 +208,17 @@ export function activate(context: vscode.ExtensionContext): void {
     },
     setRootFromNode: setRootFromProjectNode,
   });
+
+  const isDigestifRunning = () => runtime.digestif?.isRunning() ?? false;
+
+  registerDocumentOutline(context, {
+    workspaceFolderPaths,
+    activeTexPath,
+    getRootFileSetting: () =>
+      vscode.workspace.getConfiguration('context').get<string>('rootFile', '') ?? '',
+    isDigestifRunning,
+  });
+  registerOutlineSymbols(context, { isDigestifRunning });
 
   registerProjectManager(context, {
     output: runtime.output,

@@ -1,6 +1,6 @@
 # ConTeXt Tools
 
-VS Code / Cursor extension for ConTeXt (LMTX): SyncTeX PDF preview, DigestiF language server, Project view, project-structure scaffolding, TextMate grammar, and snippets for the `context` language.
+VS Code / Cursor extension for ConTeXt (LMTX): SyncTeX PDF preview, DigestiF language server, Project view, Document structure outline, project-structure scaffolding, TextMate grammar, and snippets for the `context` language.
 
 **License:** GNU GPL version 2 only (`GPL-2.0-only`). See [`LICENSE`](LICENSE) and [`NOTICE`](NOTICE). Keyword lists are derived from ConTeXt SciTE data (same GPL-2 regime).
 
@@ -8,7 +8,7 @@ VS Code / Cursor extension for ConTeXt (LMTX): SyncTeX PDF preview, DigestiF lan
 
 - VS Code or Cursor
 - LMTX / ConTeXt Standalone for build and SyncTeX
-- DigestiF (optional) for completion, hover, and outline
+- DigestiF (optional) for completion, hover, and Explorer Outline enrichment
 
 ## Install
 
@@ -48,6 +48,9 @@ Resolution: absolute `context.contextPath` / `context.mtxrunPath` overrides, the
 | `context.projectView.includeInputs` | `false` | Show `\input` children under products |
 | `context.projectView.maxFiles` | `500` | Cap on files visited while expanding the graph |
 | `context.projectView.refreshDebounceMs` | `300` | Debounce before rescan after edits/saves |
+| `context.documentOutline.enabled` | `true` | ConTeXt activity-bar Document structure TreeView |
+| `context.documentOutline.refreshDebounceMs` | `300` | Debounce before rescan of sectioning outline |
+| `context.documentOutline.digestifEnrichment` | `true` | Prefer DigestiF titles when DigestiF is running (scan still works without it) |
 | `context.build.args` | `[]` | Extra args after `--synctex=repeat` (not the primary `--mode` switch) |
 | `context.build.modes` | `[]` | Catalog of mode names for **Select Build Modes** (workspace) |
 | `context.build.activeModes` | `[]` | Enabled modes → inject `--mode=a,b` (workspace; overrides `--mode` in `build.args` with a warning) |
@@ -97,7 +100,7 @@ SyncTeX marks text, not pure image areas; clicks on figures with no text usually
 
 ## DigestiF
 
-Optional. DigestiF never blocks build, preview, or SyncTeX. Logs go to the **ConTeXt DigestiF** output channel; build logs stay on **ConTeXt**. Set `context.debugOutput` to send viewer / gate / SyncTeX internal traces to **ConTeXt debug**.
+Optional. DigestiF never blocks build, preview, SyncTeX, or Document structure. Logs go to the **ConTeXt DigestiF** output channel; build logs stay on **ConTeXt**. Set `context.debugOutput` to send viewer / gate / SyncTeX internal traces to **ConTeXt debug**.
 
 Language id **`context`** (aliases: ConTeXt) covers `.mkiv`, `.mkxl`, `.mkvi`, `.mklx`, `.mkii`. The extension does not claim `*.tex` globally. DigestiF maps `context` → ConTeXt tags and `tex` / `latex` → LaTeX. For `.tex` ConTeXt sources, associate them:
 
@@ -111,7 +114,7 @@ Install DigestiF via LuaRocks (`lpeg` / `lfs` required), put it on `PATH`, or se
 
 ## Project view
 
-Activity bar **ConTeXt** → **Project**. Scans English structure commands (`\project`, `\product`, `\component`, `\environment`, `\usepath`, optional `\input`). `\usemodule` and `\externalfigure` stay on document links only.
+Activity bar **ConTeXt** → **Project**. Scans English structure commands (`\project`, `\product`, `\component`, `\environment`, `\usepath`, optional `\input`). `\usemodule` and `\externalfigure` stay on document links only. This view is the file/role graph, not sectioning.
 
 | Node | Build |
 | --- | --- |
@@ -121,6 +124,12 @@ Activity bar **ConTeXt** → **Project**. Scans English structure commands (`\pr
 | project | refused (offers first listed product if any) |
 
 Click a node to open. Actions: Build, Forward SyncTeX, Set as Main (Root) File. Title bar: **New Project Structure…**, **Reveal Active**, **Refresh**. Focusing a `.tex` file does not switch to this view; use **Reveal Active** when you want that.
+
+## Document structure
+
+Activity bar **ConTeXt** → **Document structure**. Sectioning outline (`part` → `chapter` → `section` → …) for the **active compile unit** (resolved root product, or a single-file document). Primary source is an extension-owned scan of stock `\startchapter` / `\startsection` / … (and short forms `\chapter`, `\section`, …). DigestiF is not required; when DigestiF is running and `context.documentOutline.digestifEnrichment` is on, matching titles may be replaced with DigestiF names. Environments are skipped. Click a head to open at its line. Title bar: **Refresh**.
+
+Explorer **Outline** uses the same scan via a `DocumentSymbolProvider` when DigestiF is not running; when DigestiF is up, DigestiF owns Explorer Outline (names still normalized by ConTeXt Tools middleware).
 
 ## Project structure wizard
 

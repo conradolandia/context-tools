@@ -1,8 +1,8 @@
 {
   "name": "context-tools",
   "displayName": "ConTeXt Tools",
-  "description": "ConTeXt SyncTeX PDF preview, DigestiF language server, TextMate grammar, and snippets",
-  "version": "0.1.52",
+  "description": "ConTeXt SyncTeX PDF preview, DigestiF language server, Document structure outline, TextMate grammar, and snippets",
+  "version": "0.1.53",
   "publisher": "context-lab",
   "license": "GPL-2.0-only",
   "repository": {
@@ -83,6 +83,13 @@
           "name": "Project",
           "contextualTitle": "ConTeXt Project",
           "icon": "$(list-tree)"
+        },
+        {
+          "id": "context.documentOutline",
+          "name": "Document structure",
+          "contextualTitle": "ConTeXt Document structure",
+          "icon": "$(list-unordered)",
+          "when": "config.context.documentOutline.enabled"
         }
       ]
     },
@@ -120,6 +127,15 @@
         "command": "context.projectView.refresh",
         "title": "ConTeXt: Refresh Project View",
         "icon": "$(refresh)"
+      },
+      {
+        "command": "context.documentOutline.refresh",
+        "title": "ConTeXt: Refresh Document Structure",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "context.documentOutline.openNode",
+        "title": "ConTeXt: Open Outline Node"
       },
       {
         "command": "context.projectView.revealActive",
@@ -184,6 +200,11 @@
           "command": "context.projectView.refresh",
           "when": "view == context.projectView",
           "group": "navigation@2"
+        },
+        {
+          "command": "context.documentOutline.refresh",
+          "when": "view == context.documentOutline",
+          "group": "navigation@1"
         }
       ],
       "view/item/context": [
@@ -282,6 +303,22 @@
           "default": 300,
           "minimum": 0,
           "description": "Debounce interval (ms) before rescanning the project graph after edits or saves."
+        },
+        "context.documentOutline.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show the ConTeXt Document structure TreeView (sectioning outline for the active compile unit)."
+        },
+        "context.documentOutline.refreshDebounceMs": {
+          "type": "number",
+          "default": 300,
+          "minimum": 0,
+          "description": "Debounce interval (ms) before rescanning Document structure after edits or saves."
+        },
+        "context.documentOutline.digestifEnrichment": {
+          "type": "boolean",
+          "default": true,
+          "description": "When DigestiF is running, prefer its symbol titles on matching Document structure heads. Has no effect when DigestiF is off; the scan-backed outline still works."
         },
         "context.build.args": {
           "type": "array",
