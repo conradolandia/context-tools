@@ -668,6 +668,37 @@ describe('forward SyncTeX mid-page same-line re-pick (A+B)', () => {
     assert.equal(refined.diag.action, 'refined-next-page');
     assert.equal(refined.result.page, 73);
   });
+
+  it('edge-band wrong-line (l >=) prefers same-page exact over N+1 nearby', () => {
+    // Andrés / CTX-28: synctex emits a later line's footer box before the
+    // requested line's mid-page box, so `--find` (`l >=`) lands bottom-edge on
+    // N; old refine then N+1-nearby painted later itemize text. Prefer exact.
+    const edgeWrongLinePath = resolveFixturePath(
+      'page-forward-edge-wrong-line.synctex.txt',
+    );
+    const footerLaterLineHit = {
+      page: 5,
+      llx: 72,
+      lly: 620,
+      urx: 182,
+      ury: 630,
+    };
+    const refined = refineForwardHit(
+      edgeWrongLinePath,
+      'fwd.tex',
+      5,
+      footerLaterLineHit,
+    );
+    assert.equal(refined.diag.hitInEdge, true);
+    assert.equal(refined.diag.sameLineCount, 1);
+    assert.equal(refined.diag.action, 'prefer-exact-line');
+    assert.equal(refined.result.page, 5);
+    assert.ok(
+      refined.result.lly >= 310 && refined.result.lly <= 330,
+      `expected mid-page line-5 box, got lly=${refined.result.lly}`,
+    );
+    assert.notEqual(refined.result.page, 6);
+  });
 });
 
 describe('mtxSynctex argv construction', () => {
