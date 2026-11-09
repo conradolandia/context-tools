@@ -21,7 +21,7 @@ on:
   workflow_dispatch:
     inputs:
       confirm_version:
-        description: package.json version to publish (must match exactly, e.g. 0.1.61)
+        description: package.json version to publish (must match exactly, e.g. 0.1.62)
         required: true
         type: string
 
