@@ -2,7 +2,6 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   CONTEXT_TOOLS_LANGUAGE_ID,
-  LATEX_WORKSHOP_EXT_ID,
   collectConflictReasons,
   findConflictingExtensions,
   formatConflictExtensionLine,
@@ -41,7 +40,7 @@ describe('collectConflictReasons', () => {
   it('detects grammar for language context', () => {
     const reasons = collectConflictReasons({
       contributes: {
-        grammars: [{ language: 'context', scopeName: 'text.tex.latex' }],
+        grammars: [{ language: 'context', scopeName: 'text.tex.other' }],
       },
     });
     assert.deepEqual(reasons, [
@@ -55,7 +54,7 @@ describe('collectConflictReasons', () => {
         languages: [
           { id: 'context', extensions: ['.mkiv', '.mkiv', '.mkxl'] },
         ],
-        grammars: [{ language: 'context', scopeName: 'text.tex.latex' }],
+        grammars: [{ language: 'context', scopeName: 'text.tex.other' }],
       },
     });
     assert.equal(reasons.length, 4);
@@ -101,12 +100,12 @@ describe('findConflictingExtensions', () => {
           },
         },
         {
-          id: LATEX_WORKSHOP_EXT_ID,
+          id: 'aaa.overlap',
           packageJSON: {
-            displayName: 'LaTeX Workshop',
+            displayName: 'Overlap Pack',
             contributes: {
               languages: [{ id: 'context', extensions: ['.mkiv'] }],
-              grammars: [{ language: 'context', scopeName: 'text.tex.latex' }],
+              grammars: [{ language: 'context', scopeName: 'text.tex.other' }],
             },
           },
         },
@@ -122,24 +121,24 @@ describe('findConflictingExtensions', () => {
 
     assert.deepEqual(
       found.map((f) => f.id),
-      [LATEX_WORKSHOP_EXT_ID, 'zzz.other'],
+      ['aaa.overlap', 'zzz.other'],
     );
-    assert.equal(found[0]?.displayName, 'LaTeX Workshop');
+    assert.equal(found[0]?.displayName, 'Overlap Pack');
     assert.ok(found[0]!.reasons.length >= 2);
     assert.equal(found[1]?.displayName, 'Zed Other');
   });
 
   it('formats dialog lines with id and reasons', () => {
     const line = formatConflictExtensionLine({
-      id: LATEX_WORKSHOP_EXT_ID,
-      displayName: 'LaTeX Workshop',
+      id: 'aaa.overlap',
+      displayName: 'Overlap Pack',
       reasons: [
         { kind: 'languageId', detail: 'context' },
         { kind: 'fileExtension', detail: '.mkiv' },
       ],
     });
-    assert.match(line, /LaTeX Workshop/);
-    assert.match(line, new RegExp(LATEX_WORKSHOP_EXT_ID.replace('.', '\\.')));
+    assert.match(line, /Overlap Pack/);
+    assert.match(line, /aaa\.overlap/);
     assert.match(line, /language id "context"/);
     assert.match(line, /\.mkiv/);
   });
@@ -147,8 +146,8 @@ describe('findConflictingExtensions', () => {
 
 describe('shouldWarnExtensionConflict', () => {
   const conflict = {
-    id: LATEX_WORKSHOP_EXT_ID,
-    displayName: 'LaTeX Workshop',
+    id: 'aaa.overlap',
+    displayName: 'Overlap Pack',
     reasons: [{ kind: 'languageId' as const, detail: 'context' }],
   };
 
@@ -181,11 +180,10 @@ describe('shouldWarnExtensionConflict', () => {
 });
 
 describe('resolveExtensionConflictDontAsk', () => {
-  it('honors new and legacy flags', () => {
+  it('honors setting and state flags', () => {
     assert.equal(resolveExtensionConflictDontAsk({}), false);
     assert.equal(resolveExtensionConflictDontAsk({ setting: true }), true);
-    assert.equal(resolveExtensionConflictDontAsk({ legacySetting: true }), true);
-    assert.equal(resolveExtensionConflictDontAsk({ legacyGlobalState: true }), true);
+    assert.equal(resolveExtensionConflictDontAsk({ globalState: true }), true);
     assert.equal(resolveExtensionConflictDontAsk({ workspaceState: true }), true);
   });
 });

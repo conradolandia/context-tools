@@ -408,12 +408,6 @@
           "default": false,
           "description": "If true, never warn when other installed extensions contribute language id context or the same ConTeXt file extensions (.mkiv, .mkxl, …). Also set via the warning's Don't show again action (global state)."
         },
-        "context.latexWorkshopConflict.dontAsk": {
-          "type": "boolean",
-          "default": false,
-          "description": "Deprecated alias of context.extensionConflict.dontAsk. Still honored so existing users are not re-prompted.",
-          "deprecationMessage": "Use context.extensionConflict.dontAsk instead."
-        },
         "context.equationPreview.enabled": {
           "type": "boolean",
           "default": true,

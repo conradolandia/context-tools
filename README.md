@@ -64,7 +64,7 @@ Resolution: absolute `context.contextPath` / `context.mtxrunPath` overrides, the
 | `context.digestif.enabled` | `true` | Start DigestiF LSP |
 | `context.digestifPath` | `""` | Absolute DigestiF binary; empty = PATH / luarocks |
 | `context.texAssociation.dontAsk` | `false` | Never prompt to associate `*.tex` with `context` (also set by the prompt's **Don't ask again**) |
-| `context.extensionConflict.dontAsk` | `false` | Never warn about other extensions overlapping ConTeXt language id / `.mkiv`… associations (also set by the warning's **Don't show again**). Legacy `context.latexWorkshopConflict.dontAsk` is still honored. |
+| `context.extensionConflict.dontAsk` | `false` | Never warn about other extensions overlapping ConTeXt language id / `.mkiv`… associations (also set by the warning's **Don't show again**) |
 | `context.equationPreview.enabled` | `true` | Hover preview for math under the cursor |
 | `context.equationPreview.environment` | `""` | Preamble for the preview job (User or Workspace; not inferred from Project) |
 | `context.equationPreview.format` | `"png"` | Preferred format (`png` \| `svg`); hover display uses PNG |
@@ -177,7 +177,7 @@ TextMate grammar colors known ConTeXt names from a committed SciTE keyword snaps
 
 ## Overlapping extensions
 
-Other extensions that contribute language id `context`, a grammar for that id, or the same ConTeXt filename extensions (`.mkiv`, `.mkxl`, `.mkvi`, `.mklx`, `.mkii`) can override ConTeXt Tools’ grammar or editor features. A common example is LaTeX Workshop (`James-Yu.latex-workshop`) from 10.x. On activate (and when opening a ConTeXt-like document), ConTeXt Tools lists those extensions once and asks you to disable them manually in the Extensions view. It never disables other extensions itself. Use **Don't show again** or `context.extensionConflict.dontAsk` to suppress the prompt.
+Other extensions that contribute language id `context`, a grammar for that id, or the same ConTeXt filename extensions (`.mkiv`, `.mkxl`, `.mkvi`, `.mklx`, `.mkii`) can override ConTeXt Tools’ grammar or editor features. On activate (and when opening a ConTeXt-like document), ConTeXt Tools lists those extensions once and asks you to disable them manually in the Extensions view. It never disables other extensions itself. Use **Don't show again** or `context.extensionConflict.dontAsk` to suppress the prompt.
 
 ## Develop
 

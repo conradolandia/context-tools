@@ -2,8 +2,6 @@ import * as vscode from 'vscode';
 import {
   DONT_ASK_SETTING_KEY,
   DONT_ASK_STATE_KEY,
-  LEGACY_DONT_ASK_SETTING_KEY,
-  LEGACY_DONT_ASK_STATE_KEY,
   findConflictingExtensions,
   formatConflictExtensionLine,
   resolveExtensionConflictDontAsk,
@@ -26,45 +24,9 @@ function readDontAsk(extensionContext: vscode.ExtensionContext): boolean {
   const cfg = vscode.workspace.getConfiguration('context');
   return resolveExtensionConflictDontAsk({
     setting: cfg.get<boolean>(DONT_ASK_SETTING_KEY, false),
-    legacySetting: cfg.get<boolean>(LEGACY_DONT_ASK_SETTING_KEY, false),
     globalState: extensionContext.globalState.get<boolean>(DONT_ASK_STATE_KEY),
     workspaceState: extensionContext.workspaceState.get<boolean>(DONT_ASK_STATE_KEY),
-    legacyGlobalState: extensionContext.globalState.get<boolean>(LEGACY_DONT_ASK_STATE_KEY),
-    legacyWorkspaceState: extensionContext.workspaceState.get<boolean>(
-      LEGACY_DONT_ASK_STATE_KEY,
-    ),
   });
-}
-
-/**
- * If the user previously chose don't-ask under the LW-only keys, copy that
- * into the generalized keys so Settings UI and state stay aligned.
- */
-async function migrateLegacyDontAsk(
-  extensionContext: vscode.ExtensionContext,
-): Promise<void> {
-  const cfg = vscode.workspace.getConfiguration('context');
-  const legacy =
-    cfg.get<boolean>(LEGACY_DONT_ASK_SETTING_KEY, false) === true ||
-    extensionContext.globalState.get<boolean>(LEGACY_DONT_ASK_STATE_KEY) === true ||
-    extensionContext.workspaceState.get<boolean>(LEGACY_DONT_ASK_STATE_KEY) === true;
-  if (!legacy) {
-    return;
-  }
-
-  const already =
-    cfg.get<boolean>(DONT_ASK_SETTING_KEY, false) === true ||
-    extensionContext.globalState.get<boolean>(DONT_ASK_STATE_KEY) === true;
-  if (already) {
-    return;
-  }
-
-  await extensionContext.globalState.update(DONT_ASK_STATE_KEY, true);
-  try {
-    await cfg.update(DONT_ASK_SETTING_KEY, true, vscode.ConfigurationTarget.Global);
-  } catch {
-    // Settings write can fail in restricted hosts; globalState is enough.
-  }
 }
 
 function inspectInstalledExtensions(
@@ -118,8 +80,6 @@ export async function maybeWarnExtensionConflict(
   extensionContext: vscode.ExtensionContext,
   log?: (line: string) => void,
 ): Promise<void> {
-  await migrateLegacyDontAsk(extensionContext);
-
   const ourId = extensionContext.extension.id;
   const conflicts = inspectInstalledExtensions(ourId);
   const dontAsk = readDontAsk(extensionContext);

@@ -13,22 +13,10 @@ export const CONTEXT_TOOLS_FILE_EXTENSIONS = [
   '.mkii',
 ] as const;
 
-/** Known Marketplace example that contributes language id `context` (LW 10.x+). */
-export const LATEX_WORKSHOP_EXT_ID = 'James-Yu.latex-workshop';
-
 const DONT_ASK_STATE_KEY = 'context.extensionConflict.dontAsk';
 const DONT_ASK_SETTING_KEY = 'extensionConflict.dontAsk';
 
-/** Legacy keys from the LW-only warning; still honored so users are not re-prompted. */
-const LEGACY_DONT_ASK_STATE_KEY = 'context.latexWorkshopConflict.dontAsk';
-const LEGACY_DONT_ASK_SETTING_KEY = 'latexWorkshopConflict.dontAsk';
-
-export {
-  DONT_ASK_STATE_KEY,
-  DONT_ASK_SETTING_KEY,
-  LEGACY_DONT_ASK_STATE_KEY,
-  LEGACY_DONT_ASK_SETTING_KEY,
-};
+export { DONT_ASK_STATE_KEY, DONT_ASK_SETTING_KEY };
 
 export type ExtensionInspectInput = {
   id: string;
@@ -219,23 +207,15 @@ export function shouldWarnExtensionConflict(options: {
   return true;
 }
 
-/**
- * True when either the new or legacy don't-ask flag is set (setting or state).
- */
+/** True when the don't-ask setting or matching extension state is set. */
 export function resolveExtensionConflictDontAsk(flags: {
   setting?: boolean;
-  legacySetting?: boolean;
   globalState?: boolean;
   workspaceState?: boolean;
-  legacyGlobalState?: boolean;
-  legacyWorkspaceState?: boolean;
 }): boolean {
   return (
     flags.setting === true ||
-    flags.legacySetting === true ||
     flags.globalState === true ||
-    flags.workspaceState === true ||
-    flags.legacyGlobalState === true ||
-    flags.legacyWorkspaceState === true
+    flags.workspaceState === true
   );
 }
