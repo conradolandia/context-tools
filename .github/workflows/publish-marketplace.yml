@@ -21,9 +21,14 @@ on:
   workflow_dispatch:
     inputs:
       confirm_version:
-        description: package.json version to publish (must match exactly, e.g. 0.1.62)
+        description: package.json version to publish (must match exactly, e.g. 0.1.63)
         required: true
         type: string
+      pre_release:
+        description: Publish as Marketplace pre-release
+        required: false
+        type: boolean
+        default: false
 
 # Least privilege at workflow level; publish job elevates id-token for OIDC.
 permissions:
@@ -87,5 +92,18 @@ jobs:
         run: npm run smoke:vsix
 
       # Requires @vscode/vsce >= 4.1.0 for --oidc (Trusted Publishing).
+      # GitHub Release marked pre-release → Marketplace pre-release (--pre-release).
+      # workflow_dispatch uses inputs.pre_release (default false = stable).
       - name: Publish to Marketplace (OIDC)
-        run: npx --yes @vscode/vsce@^4.1.0 publish --oidc
+        env:
+          PRE_RELEASE: ${{ (github.event_name == 'release' && github.event.release.prerelease) || (github.event_name == 'workflow_dispatch' && inputs.pre_release) }}
+        run: |
+          set -euo pipefail
+          args=(publish --oidc)
+          if [ "${PRE_RELEASE}" = "true" ]; then
+            args+=(--pre-release)
+            echo "Publishing as Marketplace pre-release"
+          else
+            echo "Publishing as Marketplace release"
+          fi
+          npx --yes @vscode/vsce@^4.1.0 "${args[@]}"
