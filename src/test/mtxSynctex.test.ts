@@ -1,8 +1,11 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
+import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { readFixture, resolveFixturePath } from './helpers/fixtures';
+import { makeTempDir } from './helpers/tmpDir';
 import {
+  forwardSync,
   parseFindOutput,
   parseAllFindHits,
   parseReportOutput,
@@ -744,5 +747,34 @@ describe('mtxSynctex argv construction', () => {
       synctexSourceArg('/other/place/foo.tex', jobDir),
       '/other/place/foo.tex',
     );
+  });
+});
+
+describe('mtxSynctex mtxrun spawn', () => {
+  it('runs mtxrun with stdin ignored (not an open pipe)', async () => {
+    if (process.platform === 'win32') {
+      return;
+    }
+    const dir = await makeTempDir('mtx-stdin-');
+    const fakeMtxrun = path.join(dir, 'mtxrun');
+    // Answers --find only when stdin is not a pipe/socket (i.e. /dev/null).
+    fs.writeFileSync(
+      fakeMtxrun,
+      `#!${process.execPath}\n` +
+        `const st = require('node:fs').fstatSync(0);\n` +
+        `process.stdout.write(st.isFIFO() || st.isSocket()\n` +
+        `  ? 'stdin is an open pipe\\n'\n` +
+        `  : 'page=1 llx=72 lly=100 urx=300 ury=112\\n');\n`,
+    );
+    fs.chmodSync(fakeMtxrun, 0o755);
+
+    const res = await forwardSync(
+      { contextPath: '', mtxrunPath: fakeMtxrun },
+      path.join(dir, 'job.synctex'),
+      path.join(dir, 'job.tex'),
+      3,
+      dir,
+    );
+    assert.deepEqual(res.raw, { page: 1, llx: 72, lly: 100, urx: 300, ury: 112 });
   });
 });

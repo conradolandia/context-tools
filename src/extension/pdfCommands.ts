@@ -6,6 +6,7 @@ import {
   findSynctexSibling,
   gateJobArtifacts,
   isConTeXtPreviewPdf,
+  sourceToPdfPath,
   type JobSnapshot,
 } from '../build/artifactGate';
 import {
@@ -18,13 +19,9 @@ import { logDebug, logUser } from '../outputLog';
 import { resolveCurrentRoot } from './rootCommands';
 import { LAST_GATED_PDF_STATE_KEY, runtime } from './state';
 
-function rootPdfPath(rootFile: string): string {
-  return rootFile.replace(/\.[^.]+$/, '.pdf');
-}
-
 function relatedJobPdfPaths(): Array<string | undefined> {
   const root = resolveCurrentRoot();
-  return [runtime.snapshot?.pdfPath, root ? rootPdfPath(root.rootFile) : undefined];
+  return [runtime.snapshot?.pdfPath, root ? sourceToPdfPath(root.rootFile) : undefined];
 }
 
 async function rememberGatedPdf(snap: JobSnapshot): Promise<void> {
@@ -109,7 +106,7 @@ export async function showPdf(): Promise<void> {
       logUser,
     );
   }
-  const pdfPath = rootPdfPath(root.rootFile);
+  const pdfPath = sourceToPdfPath(root.rootFile);
   if (!fs.existsSync(pdfPath)) {
     void vscode.window.showErrorMessage(
       `No PDF at ${pdfPath}. Run ConTeXt: Build and Preview, or open an existing job PDF from the Explorer.`,
@@ -164,7 +161,7 @@ export async function maybeOpenExistingOnActivate(): Promise<void> {
   if (!root) {
     return;
   }
-  const pdfPath = rootPdfPath(root.rootFile);
+  const pdfPath = sourceToPdfPath(root.rootFile);
   if (!fs.existsSync(pdfPath) || !findSynctexSibling(pdfPath)) {
     return;
   }

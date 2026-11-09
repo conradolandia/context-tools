@@ -271,6 +271,7 @@ export function isInvalidSynctexLogMessage(text: string): boolean {
   return /invalid synctex log file/i.test(text);
 }
 
+/** Spawn mtxrun with stdin ignored (same hang class as `spawnContextBuild`). */
 function runMtx(
   toolchain: Toolchain,
   args: string[],
@@ -281,6 +282,7 @@ function runMtx(
       cwd,
       env: process.env,
       shell: false,
+      stdio: ['ignore', 'pipe', 'pipe'],
     });
     let stdout = '';
     let stderr = '';
