@@ -9,6 +9,7 @@ import {
   gateJobArtifacts,
   findSynctexSibling,
   isConTeXtPreviewPdf,
+  sourceToPdfPath,
   ArtifactGateError,
 } from '../build/artifactGate';
 import { makeTempDir } from './helpers/tmpDir';
@@ -66,6 +67,56 @@ describe('artifactGate', () => {
     assert.equal(snap.generation, 1);
     assert.ok(snap.size >= body.length);
     assert.equal(await hasPdfHeader(snap.pdfPath), true);
+  });
+
+  it('rejects a stable PDF without a %%EOF trailer', async () => {
+    const dir = await makeTempDir('context-gate-');
+    const pdf = path.join(dir, 'truncated.pdf');
+    await fsp.writeFile(pdf, '%PDF-1.4\n1 0 obj\n<<>>\nendobj\n');
+    await assert.rejects(
+      () => waitForStablePdf(pdf, { settleMs: 5, settleSamples: 2 }),
+      (err: unknown) =>
+        err instanceof ArtifactGateError && /%%EOF/.test(err.message),
+    );
+  });
+
+  it('passes once the %%EOF trailer lands after a stable pause', async () => {
+    const dir = await makeTempDir('context-gate-');
+    const pdf = path.join(dir, 'paused.pdf');
+    await fsp.writeFile(pdf, '%PDF-1.4\n1 0 obj\n<<>>\nendobj\n');
+    // Size stays stable for several samples before the trailer is written.
+    const timer = setTimeout(() => {
+      fs.appendFileSync(pdf, 'trailer\n<<>>\nstartxref\n0\n%%EOF\n');
+    }, 120);
+    try {
+      const size = await waitForStablePdf(pdf, { settleMs: 20, settleSamples: 2 });
+      assert.equal(size, fs.statSync(pdf).size);
+    } finally {
+      clearTimeout(timer);
+    }
+  });
+
+  it('sourceToPdfPath keeps dir + stem and swaps the extension', () => {
+    assert.equal(
+      sourceToPdfPath(path.join('proj', 'job.tex')),
+      path.join('proj', 'job.pdf'),
+    );
+    assert.equal(
+      sourceToPdfPath(path.join('proj', 'job.mkxl')),
+      path.join('proj', 'job.pdf'),
+    );
+    assert.equal(
+      sourceToPdfPath(path.join('proj', 'job')),
+      path.join('proj', 'job.pdf'),
+    );
+    assert.equal(
+      sourceToPdfPath(path.join('my.proj', 'job')),
+      path.join('my.proj', 'job.pdf'),
+    );
+    assert.equal(
+      sourceToPdfPath(path.join('proj', 'job.v2.tex')),
+      path.join('proj', 'job.v2.pdf'),
+    );
   });
 
   it('fails clearly when PDF is missing', async () => {

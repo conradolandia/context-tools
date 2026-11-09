@@ -28,7 +28,7 @@ Build path: `buildController` → `spawnContextBuild` → artifact gate → view
 
 ## Invariants
 
-1. **stdin ignore on `context` spawn.** Always `stdio: ['ignore', 'pipe', 'pipe']` (`src/build/spawnContext.ts`). An open stdin pipe can hang LuaMetaTeX. POSIX builds also use `detached: true` so cancel can signal the process group (`context` + `luametatex`).
+1. **stdin ignore on `context` / `mtxrun` spawn.** Always `stdio: ['ignore', 'pipe', 'pipe']` (`src/build/spawnContext.ts`, `runMtx` in `src/synctex/mtxSynctex.ts`). An open stdin pipe can hang LuaMetaTeX. POSIX builds also use `detached: true` so cancel can signal the process group (`context` + `luametatex`).
 2. **DigestiF must not block build or Document structure.** Launch is async; failures log to the DigestiF channel. Build / preview / SyncTeX / outline scan proceed regardless. DigestiF titles are optional enrichment only.
 3. **Language id `context` for DigestiF ConTeXt mode.** DigestiF maps `tex`/`latex` → LaTeX tags.
 4. **Do not claim `*.tex` globally** in `contributes.languages`. Offer workspace `files.associations` via the existing prompt only.

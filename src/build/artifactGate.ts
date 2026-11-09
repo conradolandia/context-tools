@@ -53,7 +53,9 @@ export async function hasEofMarker(filePath: string): Promise<boolean> {
 }
 
 /**
- * Wait until the PDF exists, has non-zero stable size, and a %PDF- header.
+ * Wait until the PDF exists, has non-zero stable size, a %PDF- header, and a
+ * %%EOF trailer. A stable size without the trailer keeps sampling (the writer
+ * can pause mid-file) and fails once attempts run out.
  */
 export async function waitForStablePdf(
   pdfPath: string,
@@ -68,6 +70,7 @@ export async function waitForStablePdf(
 
   let lastSize = -1;
   let stableCount = 0;
+  let missingEof = false;
   const maxAttempts = 40;
 
   for (let i = 0; i < maxAttempts; i++) {
@@ -75,6 +78,7 @@ export async function waitForStablePdf(
     if (stat.size <= 0) {
       lastSize = 0;
       stableCount = 0;
+      missingEof = false;
       await sleep(settleMs);
       continue;
     }
@@ -86,19 +90,33 @@ export async function waitForStablePdf(
             `File does not look like a PDF (missing %PDF- header): ${pdfPath}`,
           );
         }
-        await hasEofMarker(pdfPath);
-        return stat.size;
+        if (await hasEofMarker(pdfPath)) {
+          return stat.size;
+        }
+        missingEof = true;
       }
     } else {
       lastSize = stat.size;
       stableCount = 1;
+      missingEof = false;
     }
     await sleep(settleMs);
   }
 
   throw new ArtifactGateError(
-    `PDF size did not settle: ${pdfPath} (last size ${lastSize})`,
+    missingEof
+      ? `PDF looks incomplete (no %%EOF trailer): ${pdfPath} (size ${lastSize})`
+      : `PDF size did not settle: ${pdfPath} (last size ${lastSize})`,
   );
+}
+
+/**
+ * Job PDF path ConTeXt writes for a source file: same directory and stem,
+ * `.pdf` extension (`dir/job.tex` and `dir/job` both map to `dir/job.pdf`).
+ */
+export function sourceToPdfPath(sourcePath: string): string {
+  const parsed = path.parse(sourcePath);
+  return path.join(parsed.dir, `${parsed.name}.pdf`);
 }
 
 export function findSynctexSibling(pdfPath: string): string | undefined {

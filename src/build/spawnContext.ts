@@ -1,5 +1,5 @@
 import { spawn, type ChildProcess } from 'node:child_process';
-import * as path from 'node:path';
+import { sourceToPdfPath } from './artifactGate';
 
 export interface ContextBuildResult {
   exitCode: number;
@@ -23,11 +23,6 @@ export interface SpawnContextBuildOptions {
 export interface SpawnContextBuildHandle {
   child: ChildProcess;
   promise: Promise<ContextBuildResult>;
-}
-
-function jobPdfPath(sourcePath: string): string {
-  const parsed = path.parse(sourcePath);
-  return path.join(parsed.dir, `${parsed.name}.pdf`);
 }
 
 /**
@@ -73,7 +68,7 @@ export function spawnContextBuild(options: SpawnContextBuildOptions): SpawnConte
         stdout,
         stderr,
         sourcePath,
-        pdfPath: jobPdfPath(sourcePath),
+        pdfPath: sourceToPdfPath(sourcePath),
         cwd,
       });
     });
