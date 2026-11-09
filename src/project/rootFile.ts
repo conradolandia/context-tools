@@ -1,5 +1,6 @@
 import * as path from 'node:path';
 import { existsRegularFile } from './fsHelpers';
+import { ROOT_FILE_EXTENSIONS } from './pathResolve';
 
 export type RootRule =
   | 'setting:context.rootFile'
@@ -18,10 +19,11 @@ const START_COMPONENT = /\\startcomponent\b/;
 const PRODUCT_CMD = /\\product\s+\{?([^\s\}%]+)\}?/;
 
 function withTexExt(name: string): string[] {
-  if (/\.(tex|ctx|mkiv|mkxl)$/i.test(name)) {
+  const lower = name.toLowerCase();
+  if (ROOT_FILE_EXTENSIONS.some((ext) => lower.endsWith(ext))) {
     return [name];
   }
-  return [`${name}.tex`, `${name}.ctx`, `${name}.mkiv`, `${name}.mkxl`];
+  return ROOT_FILE_EXTENSIONS.map((ext) => `${name}${ext}`);
 }
 
 function resolveCandidate(baseDir: string, name: string): string | undefined {

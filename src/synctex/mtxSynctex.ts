@@ -4,7 +4,6 @@ import type { Toolchain } from '../toolchain/discover';
 import {
   boxArea,
   boxVerticalCenter,
-  COARSE_FLOAT_LINE_USER_MESSAGE,
   estimatePageHeightFromBoxes,
   estimatePageWidthFromBoxes,
   FORWARD_EDGE_BAND_FRAC,
@@ -21,32 +20,6 @@ import {
   synctexUnitScaleToPt,
   type SynctexBox,
 } from './synctexBoxes';
-
-export {
-  boxArea,
-  boxVerticalCenter,
-  COARSE_FLOAT_LINE_USER_MESSAGE,
-  distanceToBox,
-  estimatePageHeightFromBoxes,
-  FORWARD_EDGE_BAND_FRAC,
-  FORWARD_MAX_BOX_PAGE_FRAC,
-  FORWARD_NEARBY_LINE_MAX,
-  isOversizedForwardBox,
-  isSuspiciousFileStartHit,
-  nearestSynctexBox,
-  nearestSynctexBoxAboveLine,
-  parseSynctexPageBoxes,
-  pickForwardNonEdgeFallbackBox,
-  pickForwardSameLineBox,
-  readSynctexPageBoxes,
-  scaleSynctexBox,
-  synctexFilenamesMatch,
-  synctexUnitScaleToPt,
-  SYNCTEX_SP_PER_PT,
-  SUSPICIOUS_TOP_LINE_MAX,
-  MID_PAGE_MTX_Y_MIN,
-} from './synctexBoxes';
-export type { SynctexBox } from './synctexBoxes';
 
 export interface ForwardSyncResult {
   page: number;

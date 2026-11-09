@@ -13,6 +13,18 @@ export const TEX_INCLUDE_EXTENSIONS = [
   '.ctx',
 ] as const;
 
+/**
+ * Subset of {@link TEX_INCLUDE_EXTENSIONS} tried, in this order, for compile-root
+ * names without a suffix (`\product <name>`, `% !TEX root = <name>`). `.mkvi`,
+ * `.mklx`, `.cld`, and `.lua` resolve as includes in the Project graph only.
+ */
+export const ROOT_FILE_EXTENSIONS = [
+  '.tex',
+  '.ctx',
+  '.mkiv',
+  '.mkxl',
+] as const satisfies readonly (typeof TEX_INCLUDE_EXTENSIONS)[number][];
+
 /** Common image extensions for `\\externalfigure`. */
 export const FIGURE_EXTENSIONS = [
   '.pdf',
