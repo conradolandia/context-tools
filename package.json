@@ -2,8 +2,8 @@
   "name": "context-tools",
   "displayName": "ConTeXt Tools",
   "description": "ConTeXt SyncTeX PDF preview, equation hover preview, DigestiF language server, Document structure outline, TextMate grammar, and snippets",
-  "version": "0.1.59",
-  "publisher": "context-lab",
+  "version": "0.1.60",
+  "publisher": "AndresConradoMontoya",
   "license": "GPL-2.0-only",
   "repository": {
     "type": "git",

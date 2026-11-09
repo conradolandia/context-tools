@@ -78,7 +78,7 @@ describe('collectConflictReasons', () => {
 });
 
 describe('findConflictingExtensions', () => {
-  const ourId = 'context-lab.context-tools';
+  const ourId = 'AndresConradoMontoya.context-tools';
 
   it('excludes our extension and returns sorted conflicts', () => {
     const found = findConflictingExtensions(
