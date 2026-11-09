@@ -6,7 +6,6 @@ import {
   findBoxToPdfBox,
   findBoxToCss,
   findBoxNormalize,
-  mtxBoxToPdfBox,
   type PageBox,
 } from '../synctex/coords';
 import { FIND_BOX_VECTORS, PAGE_680 } from '../synctex/coordsVectors';
@@ -42,7 +41,6 @@ describe('find-box contract vectors (shared with viewer mirror)', () => {
       const css = findBoxToCss(v.box, v.page, v.scale);
       assert.deepEqual(pdf, v.pdf);
       assert.deepEqual(css, v.css);
-      assert.deepEqual(mtxBoxToPdfBox(v.box, v.page), pdf);
     });
   }
 

@@ -463,10 +463,6 @@ export class PdfPanel {
     await this.panel!.webview.postMessage(msg);
   }
 
-  public getCurrentPdfPath(): string | undefined {
-    return this.currentPdfPath;
-  }
-
   /** Host-side state for serializer revive after reload. */
   public getPersistedState(): PdfPanelState {
     return {

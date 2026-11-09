@@ -88,14 +88,6 @@ export function findBoxToPdfBox(
 }
 
 /**
- * @deprecated Alias kept for older call sites; `--find` is top-down and must
- * be mapped with {@link findBoxToPdfBox} (needs the PDF page box).
- */
-export function mtxBoxToPdfBox(box: MtxBox, page: PageBox): MtxBox {
-  return findBoxToPdfBox(box, page);
-}
-
-/**
  * CSS/viewport box from an mtx `--find` top-down box at a given scale.
  * CSS y=0 is the page top: top = synctexY * scale (no pageViewH/synctexH stretch).
  * `pdfPage` / `_synctexPage` are kept for call-site compatibility; crop is applied
@@ -113,28 +105,5 @@ export function findBoxToCss(
     top: src.lly * scale,
     width: (src.urx - src.llx) * scale,
     height: (src.ury - src.lly) * scale,
-  };
-}
-
-/**
- * @deprecated Use {@link findBoxToCss} with PDF + optional synctex page sizes.
- */
-export function mtxBoxToCss(
-  box: MtxBox,
-  scale: number,
-  page?: PageBox,
-  synctexPage?: { width: number; height: number },
-): { left: number; top: number; width: number; height: number } {
-  if (page) {
-    return findBoxToCss(box, page, scale, synctexPage);
-  }
-  // Legacy path without page: treat numbers as already CSS-top-ish (tests only).
-  const topFromTop = Math.min(box.lly, box.ury);
-  const bottomFromTop = Math.max(box.lly, box.ury);
-  return {
-    left: Math.min(box.llx, box.urx) * scale,
-    top: topFromTop * scale,
-    width: Math.abs(box.urx - box.llx) * scale,
-    height: (bottomFromTop - topFromTop) * scale,
   };
 }
