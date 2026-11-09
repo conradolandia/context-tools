@@ -13,7 +13,7 @@ VS Code / Cursor extension for ConTeXt (LMTX): SyncTeX PDF preview, equation hov
 
 ## Install
 
-**Marketplace / Open VSX.** Search the Extensions view for **ConTeXt Tools** (id `AndresConradoMontoya.context-tools`) once the listing is live. The VS Code Marketplace and Open VSX (Cursor, VSCodium) get the same build.
+**Marketplace / Open VSX.** Search the Extensions view for **ConTeXt Tools** (id `AndresConradoMontoya.context-tools`) once the listing is live. The VS Code Marketplace and Open VSX (Cursor, VSCodium) get the same build. Marketplace releases use GitHub Actions Trusted Publishing on [`conradolandia/context-tools`](https://github.com/conradolandia/context-tools) (see [Publish (Marketplace)](CONTRIBUTING.md#publish-marketplace) in CONTRIBUTING).
 
 **VSIX.** Download one from the [repository](https://github.com/conradolandia/context-tools) release assets, or build it:
 
