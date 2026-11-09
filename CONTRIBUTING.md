@@ -1,6 +1,11 @@
 # Contributing to ConTeXt Tools
 
-Developer workflow. End-user install and settings: [`README.md`](README.md). Agent invariants: [`AGENTS.md`](AGENTS.md).
+Developer workflow for humans changing this repository.
+
+- **End users** (install, features, settings, troubleshooting): [`README.md`](README.md)
+- **Coding agents** (architecture map, invariants, caution): [`AGENTS.md`](AGENTS.md)
+
+Keep those roles separate. Do not put F5 / vsce / Trusted Publishing / architecture / agent invariants in the README. Do not duplicate the README’s user guide here.
 
 ## Setup
 

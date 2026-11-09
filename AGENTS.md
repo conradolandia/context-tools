@@ -1,6 +1,8 @@
 # Agent guidance (ConTeXt Tools)
 
-Coding-agent notes for this repo. Setup: [`CONTRIBUTING.md`](CONTRIBUTING.md). User docs: [`README.md`](README.md).
+Coding-agent notes for this repo. Human contributor setup: [`CONTRIBUTING.md`](CONTRIBUTING.md). End-user docs: [`README.md`](README.md).
+
+`README.md` is for extension users only (install, features, settings, troubleshooting). Put F5 / vsce / Trusted Publishing / packaging in CONTRIBUTING. Put architecture, invariants, and edit caution here. Do not grow the README with agent or LLM-oriented guidance.
 
 ## Architecture map
 

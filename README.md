@@ -1,33 +1,113 @@
 # ConTeXt Tools
 
-VS Code / Cursor extension for ConTeXt (LMTX): SyncTeX PDF preview, equation hover preview, DigestiF language server, Project view, Document structure outline, project-structure scaffolding, TextMate grammar, and snippets for the `context` language.
+VS Code / Cursor extension for ConTeXt (LMTX). It builds your document, shows the PDF with SyncTeX, and adds Project / Document structure views, equation hover preview, optional DigestiF language support, TextMate highlighting, and snippets for the `context` language.
 
 **License:** GNU GPL version 2 only (`GPL-2.0-only`). See [`LICENSE`](LICENSE) and [`NOTICE`](NOTICE). Keyword lists are derived from ConTeXt SciTE data (same GPL-2 regime).
 
 ## Requirements
 
 - VS Code or Cursor
-- LMTX / ConTeXt Standalone for build, SyncTeX, and equation hover preview
+- [LMTX / ConTeXt Standalone](https://wiki.contextgarden.net/ConTeXt_Standalone) for build, SyncTeX, and equation hover preview
 - MuPDF (`mutool`) or Poppler (`pdftoppm` / `pdftocairo`) for equation hover rasterization
 - DigestiF (optional) for completion, command hover, and Explorer Outline enrichment
 
 ## Install
 
-**Marketplace / Open VSX.** Search the Extensions view for **ConTeXt Tools** (id `AndresConradoMontoya.context-tools`) once the listing is live. The VS Code Marketplace and Open VSX (Cursor, VSCodium) get the same build. Marketplace releases use GitHub Actions Trusted Publishing on [`conradolandia/context-tools`](https://github.com/conradolandia/context-tools) (see [Publish (Marketplace)](CONTRIBUTING.md#publish-marketplace) in CONTRIBUTING).
+**Marketplace / Open VSX.** Search the Extensions view for **ConTeXt Tools** (id `AndresConradoMontoya.context-tools`) once the listing is live. The same extension id is intended for the VS Code Marketplace and Open VSX (Cursor, VSCodium).
 
-**VSIX.** Download one from the [repository](https://github.com/conradolandia/context-tools) release assets, or build it:
+**VSIX.** Download a `.vsix` from the [GitHub releases](https://github.com/conradolandia/context-tools/releases) page when available, then use **Extensions: Install from VSIX…**. To build a VSIX from source, see [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
-```bash
-npm install && npm run compile && npx @vscode/vsce package
+## First run
+
+1. Install LMTX so `context` and `mtxrun` are on your `PATH`, or set `context.root` to the ConTeXt installation root (parent of `tex/`). See [Settings](#settings).
+2. Open a ConTeXt source file (`.mkiv`, `.mkxl`, …, or a `.tex` file associated with language id `context`).
+3. Run **ConTeXt: Build and Preview** from the Command Palette.
+
+Status bar items show the resolved main (root) file and optional build modes. Build output goes to the **ConTeXt** channel; DigestiF (if used) logs to **ConTeXt DigestiF**.
+
+## Features
+
+### Build and preview
+
+**ConTeXt: Build and Preview** runs `context --synctex=repeat` on the resolved root file, then opens or refreshes the built-in PDF viewer. **ConTeXt: Cancel Build** stops a running job (you can also click the build status bar item while it runs).
+
+Use **ConTeXt: Select Build Modes** (or the Modes status bar item) to choose ConTeXt `--mode` flags from `context.build.modes`. Enabled modes are stored in `context.build.activeModes` and inject `--mode=a,b`. Prefer that over putting `--mode` in `context.build.args`; if both are set, active modes win and the build log warns.
+
+**ConTeXt: Show PDF** opens the last gated PDF without rebuilding. In Explorer, **Open in ConTeXt PDF Viewer** on a job `.pdf` uses a sibling `.synctex` or the active root output when present.
+
+Optional `context.build.onSave` starts a build on save; rapid saves coalesce. While a build runs, the viewer keeps the last good PDF, then reloads after a short stability check and preserves scroll and zoom.
+
+### SyncTeX and PDF viewer
+
+| Action | How |
+| --- | --- |
+| Forward SyncTeX (source → PDF) | **ConTeXt: Forward SyncTeX** — `Ctrl+Alt+J` (macOS: `Cmd+Alt+J`) |
+| Backward SyncTeX (PDF → source) | **Ctrl+click** (macOS: **Cmd+click**) in the PDF |
+| Follow PDF links | Plain click (internal dest or external URL). Ctrl/Cmd+click stays SyncTeX |
+| Zoom | Toolbar **+/-** / **Fit**, editable `%`, or **Ctrl/Cmd+wheel** |
+
+SyncTeX marks text, not pure image areas; clicks on figures with no text usually show a short toast. Caption and float resolution depend on how ConTeXt wrote the `.synctex` for that job. Turn SyncTeX off with `context.synctex.enabled`.
+
+### Project view
+
+Activity bar **ConTeXt** → **Project**. Shows the file/role graph from English structure commands (`\project`, `\product`, `\component`, `\environment`, `\usepath`, optional `\input`). This is not the sectioning outline.
+
+| Node | Build |
+| --- | --- |
+| product / document | yes |
+| component | yes (via root resolution) |
+| environment | no |
+| project | refused (offers the first listed product if any) |
+
+Click a node to open. Context actions: Build, Forward SyncTeX, Set as Main (Root) File. Title bar: **New Project Structure…**, **Reveal Active**, **Refresh**.
+
+### Document structure
+
+Activity bar **ConTeXt** → **Document structure**. Sectioning outline (`part` → `chapter` → `section` → …) for the active compile unit (resolved root product, or a single-file document). The outline comes from an extension-owned scan of stock heads (`\startchapter`, `\section`, …). DigestiF is not required; when DigestiF is running and enrichment is on, matching titles may use DigestiF names. Click a head to jump to its line.
+
+Explorer **Outline** uses the same scan when DigestiF is not running; when DigestiF is up, DigestiF owns Explorer Outline (names still normalized by ConTeXt Tools).
+
+### Equation hover preview
+
+Hover over `\startformula`…`\stopformula` (and other `\start…formula` blocks), `$…$` / `$$…$$`, or a non-empty selection that contains the cursor. The extension runs a temporary `\startTEXpage` job (separate from the document build), rasters the PDF, and shows a clamped image. Hover links open a save dialog for PDF, SVG, or PNG at natural size.
+
+Set `context.equationPreview.environment` to the preamble you need (`\environment…`, typescripts, macros). Use **User** settings for a personal default and **Workspace** settings per project (Workspace wins). Empty means stock ConTeXt math only; nothing is inferred from Project / root / auto `\environment`.
+
+Needs LMTX plus MuPDF or Poppler on `PATH` (or reachable via `context.root`). Missing raster tools produce an explicit hover message. DigestiF is not used for equation preview.
+
+### DigestiF (optional)
+
+DigestiF provides completion, command hover, and related LSP features. It never blocks build, preview, SyncTeX, or Document structure. Failures log to **ConTeXt DigestiF** only.
+
+Language id **`context`** (aliases: ConTeXt) covers `.mkiv`, `.mkxl`, `.mkvi`, `.mklx`, `.mkii`. The extension does not claim `*.tex` globally. DigestiF maps `context` → ConTeXt tags and `tex` / `latex` → LaTeX. For `.tex` ConTeXt sources, associate them:
+
+```json
+"files.associations": {
+  "*.tex": "context"
+}
 ```
 
-Then **Extensions: Install from VSIX…** and pick the `.vsix`.
+Install DigestiF via LuaRocks (`lpeg` / `lfs` required), put it on `PATH`, or set `context.digestifPath`. Resolution order: `context.digestifPath` → `~/.luarocks/bin/digestif` → `digestif` on PATH.
 
-**First run.** Set `context.root` if `context` / `mtxrun` are not on `PATH` (see [Settings](#settings)), open a ConTeXt source, and run **ConTeXt: Build and Preview**.
+### Project structure wizard
+
+**ConTeXt: New Project Structure…** scaffolds a minimal layout for the job: single document; document + environment; product + components; or project tier (several products — compile each product, not the `\startproject` file).
+
+After create, the wizard writes `.context/structure.json`, opens the compile root, optionally sets `context.rootFile`, refreshes the Project view, and may offer `files.associations["*.tex"] = "context"`. Scaffolds use `.tex` only.
+
+On the names step (tiers other than single), **Directory layout** is **Flat** (default) or **By role** (`environments/`, products at scaffold or series root, `components/` with `\usepath`). For **product** and **project** tiers, an optional checkbox adds a `\startdocument` metadata stub in each product file.
+
+**ConTeXt: Upgrade Project Structure…** moves a scaffold one rung up when `.context/structure.json` is present.
+
+### Snippets and syntax
+
+Built-in snippets for language id **`context`**: structure stubs, sectioning, and common environments. Triggers work with or without a leading `\`. Environment-like `\start…` snippets insert a matching `\stop…`. They appear only when the editor language is `context`. Add your own via **Snippets: Configure User Snippets** → **context**, or a `.vscode/*.code-snippets` file with `"scope": "context"`.
+
+TextMate grammar colors known ConTeXt names from a SciTE keyword snapshot. After an LMTX upgrade, run **ConTeXt: Refresh command keywords** and reload the window. Folding matches `\start<name>` / `\stop<name>` pairs. Build diagnostics appear in the Problems panel.
 
 ## Settings
 
-`context.root` is the ConTeXt installation root (parent of `tex/`). Binaries are under `$CONTEXT_ROOT/tex/texmf-<platform>/bin/` (`context`, `mtxrun`, `luametatex`, …). See [wiki Structure](https://wiki.contextgarden.net/ConTeXt_Standalone/Structure).
+`context.root` is the ConTeXt installation root (parent of `tex/`). Binaries live under `$CONTEXT_ROOT/tex/texmf-<platform>/bin/`. See [wiki Structure](https://wiki.contextgarden.net/ConTeXt_Standalone/Structure).
 
 ```text
 $CONTEXT_ROOT/                 ← context.root
@@ -36,7 +116,13 @@ $CONTEXT_ROOT/                 ← context.root
     texmf-context/…            ← formats, data, SciTE tables
 ```
 
-Resolution: absolute `context.contextPath` / `context.mtxrunPath` overrides, then binaries under `context.root`, then `context` / `mtxrun` on `PATH` (install root inferred by walking parents until `tex/texmf-context` exists). Empty `context.root` is fine when PATH already points into a normal Standalone / LMTX tree.
+Resolution order: absolute `context.contextPath` / `context.mtxrunPath`, then binaries under `context.root`, then `context` / `mtxrun` on `PATH` (install root inferred by walking parents until `tex/texmf-context` exists). Empty `context.root` is fine when PATH already points into a normal Standalone / LMTX tree. Home installs are often `$HOME/context`; system installs often `/opt/context`.
+
+```json
+{
+  "context.root": "/opt/context"
+}
+```
 
 | Setting | Default | Notes |
 | --- | --- | --- |
@@ -53,20 +139,20 @@ Resolution: absolute `context.contextPath` / `context.mtxrunPath` overrides, the
 | `context.projectView.refreshDebounceMs` | `300` | Debounce before rescan after edits/saves |
 | `context.documentOutline.enabled` | `true` | ConTeXt activity-bar Document structure TreeView |
 | `context.documentOutline.refreshDebounceMs` | `300` | Debounce before rescan of sectioning outline |
-| `context.documentOutline.digestifEnrichment` | `true` | Prefer DigestiF titles when DigestiF is running (scan still works without it) |
+| `context.documentOutline.digestifEnrichment` | `true` | Prefer DigestiF titles when DigestiF is running |
 | `context.build.args` | `[]` | Extra args after `--synctex=repeat` (not the primary `--mode` switch) |
 | `context.build.modes` | `[]` | Catalog of mode names for **Select Build Modes** (workspace) |
-| `context.build.activeModes` | `[]` | Enabled modes → inject `--mode=a,b` (workspace; overrides `--mode` in `build.args` with a warning) |
+| `context.build.activeModes` | `[]` | Enabled modes → inject `--mode=a,b` (workspace) |
 | `context.build.onSave` | `false` | Save starts a build; rapid saves coalesce |
 | `context.synctex.enabled` | `true` | Toggle SyncTeX |
-| `context.viewer.openExistingOnActivate` | `false` | Open existing root PDF+SyncTeX on activate (no rebuild). Default off; use **Show PDF** or Explorer menu |
-| `context.debugOutput` | `false` | Verbose traces on **ConTeXt debug** (viewer, gate, SyncTeX dumps) |
+| `context.viewer.openExistingOnActivate` | `false` | Open existing root PDF+SyncTeX on activate (no rebuild) |
+| `context.debugOutput` | `false` | Verbose traces on **ConTeXt debug** |
 | `context.digestif.enabled` | `true` | Start DigestiF LSP |
 | `context.digestifPath` | `""` | Absolute DigestiF binary; empty = PATH / luarocks |
-| `context.texAssociation.dontAsk` | `false` | Never prompt to associate `*.tex` with `context` (also set by the prompt's **Don't ask again**) |
-| `context.extensionConflict.dontAsk` | `false` | Never warn about other extensions overlapping ConTeXt language id / `.mkiv`… associations (also set by the warning's **Don't show again**) |
+| `context.texAssociation.dontAsk` | `false` | Never prompt to associate `*.tex` with `context` |
+| `context.extensionConflict.dontAsk` | `false` | Never warn about overlapping ConTeXt extensions |
 | `context.equationPreview.enabled` | `true` | Hover preview for math under the cursor |
-| `context.equationPreview.environment` | `""` | Preamble for the preview job (User or Workspace; not inferred from Project) |
+| `context.equationPreview.environment` | `""` | Preamble for the preview job (User or Workspace) |
 | `context.equationPreview.format` | `"png"` | Preferred format (`png` \| `svg`); hover display uses PNG |
 | `context.equationPreview.maxWidth` | `512` | Max hover image width (px) |
 | `context.equationPreview.maxHeight` | `512` | Max hover image height (px) |
@@ -74,22 +160,6 @@ Resolution: absolute `context.contextPath` / `context.mtxrunPath` overrides, the
 | `context.equationPreview.debounceMs` | `400` | Delay before starting a preview job |
 | `context.equationPreview.rasterTool` | `"auto"` | `auto` \| `mutool` \| `pdftoppm` \| `pdftocairo` |
 | `context.equationPreview.rasterDpi` | `150` | DPI for PNG raster of the TEXpage PDF |
-
-```json
-{
-  "context.root": "/opt/context"
-}
-```
-
-Home installs are often `$HOME/context`.
-
-### Equation hover preview
-
-Hover over `\startformula`…`\stopformula` (and other `\start…formula` blocks), `$…$` / `$$…$$`, or a non-empty selection that contains the cursor. The extension runs a temporary `\startTEXpage` job with `context --once --batch --noconsole` (separate from the document build queue), rasters the PDF, and shows a clamped image in the hover. Links in the hover open a save dialog for PDF, SVG, or PNG at natural size.
-
-`context.equationPreview.environment` is the only preamble: put `\environment…`, typescripts, macros, and setups there by hand. Use **User** settings for a personal default and **Workspace** settings per project (Workspace wins). Empty means stock ConTeXt math only; nothing is read from Project / root / auto `\environment`.
-
-Needs LMTX (`context`) plus MuPDF or Poppler on `PATH` (or reachable via `context.root`). Missing raster tools produce an explicit hover message.
 
 ### Main (root) file
 
@@ -102,83 +172,23 @@ First match wins:
 
 Status bar shows `ConTeXt: <rootname>` (click to set or clear). Build / Show PDF use the resolved root’s PDF and synctex; Forward SyncTeX still uses the **active** file and line.
 
-## Commands and SyncTeX
-
-| Action | Command / binding |
-| --- | --- |
-| Build then open/refresh viewer | **ConTeXt: Build and Preview** |
-| Cancel a running build | **ConTeXt: Cancel Build** (also: click the build status bar while running) |
-| Select ConTeXt `--mode` flags | **ConTeXt: Select Build Modes** (`context.selectBuildModes`; also: click the Modes status bar) |
-| Show last gated PDF (no rebuild) | **ConTeXt: Show PDF** (also editor context on ConTeXt/TeX); Explorer → **Open in ConTeXt PDF Viewer** on a job `.pdf` (sibling `.synctex` or active root output) |
-| Forward SyncTeX (source → PDF) | **ConTeXt: Forward SyncTeX** — `Ctrl+Alt+J` (macOS: `Cmd+Alt+J`) |
-| Backward SyncTeX (PDF → source) | **Ctrl+click** (macOS: **Cmd+click**) in the PDF webview |
-| Follow PDF links | Plain click on a link in the PDF webview (internal dest or external URL). Ctrl/Cmd+click stays SyncTeX |
-| Zoom PDF | Toolbar **+/-** / **Fit**, editable `%`, **Ctrl/Cmd+wheel** (pointer-anchored) |
-| Refresh TextMate keywords from LMTX | **ConTeXt: Refresh command keywords** (then reload the window) |
-
-Build uses `context --synctex=repeat`, then `context.build.args`, then `--mode=a,b` when `context.build.activeModes` is non-empty. Prefer **Select Build Modes** (or the Modes status bar) over putting `--mode` in `build.args`; if both are set, active modes win and the build logs a warning. Clearing the multi-select removes the `--mode` flag. The viewer keeps the last good PDF while a build runs, then reloads after a stability gate and preserves the current scroll position and zoom (it does not replay the last Forward SyncTeX jump).
-
-SyncTeX marks text, not pure image areas; clicks on figures with no text usually show a short toast. Caption clicks can still resolve coarsely on ConTeXt before the start/stop float SyncTeX wrap, and with one-shot `\placefigure`; that is not the default expectation on current LMTX. When Forward SyncTeX lands in a thin header/footer band, it prefers a same-line (then nearby-line) box outside that band closest to the mtx hit; it does not paint an unreplaced edge-band box or a page-sized vbox.
-
-## DigestiF
-
-Optional. DigestiF never blocks build, preview, SyncTeX, or Document structure. Logs go to the **ConTeXt DigestiF** output channel; build logs stay on **ConTeXt**. Set `context.debugOutput` to send viewer / gate / SyncTeX internal traces to **ConTeXt debug**.
-
-Language id **`context`** (aliases: ConTeXt) covers `.mkiv`, `.mkxl`, `.mkvi`, `.mklx`, `.mkii`. The extension does not claim `*.tex` globally. DigestiF maps `context` → ConTeXt tags and `tex` / `latex` → LaTeX. For `.tex` ConTeXt sources, associate them:
-
-```json
-"files.associations": {
-  "*.tex": "context"
-}
-```
-
-Install DigestiF via LuaRocks (`lpeg` / `lfs` required), put it on `PATH`, or set `context.digestifPath`. Launch order: `context.digestifPath` → `~/.luarocks/bin/digestif` → `digestif` on PATH.
-
-## Project view
-
-Activity bar **ConTeXt** → **Project**. Scans English structure commands (`\project`, `\product`, `\component`, `\environment`, `\usepath`, optional `\input`). `\usemodule` and `\externalfigure` stay on document links only. This view is the file/role graph, not sectioning.
-
-| Node | Build |
-| --- | --- |
-| product / document | yes |
-| component | yes (via root resolution) |
-| environment | no |
-| project | refused (offers first listed product if any) |
-
-Click a node to open. Actions: Build, Forward SyncTeX, Set as Main (Root) File. Title bar: **New Project Structure…**, **Reveal Active**, **Refresh**. Focusing a `.tex` file does not switch to this view; use **Reveal Active** when you want that.
-
-## Document structure
-
-Activity bar **ConTeXt** → **Document structure**. Sectioning outline (`part` → `chapter` → `section` → …) for the **active compile unit** (resolved root product, or a single-file document). Primary source is an extension-owned scan of stock `\startchapter` / `\startsection` / … (and short forms `\chapter`, `\section`, …). DigestiF is not required; when DigestiF is running and `context.documentOutline.digestifEnrichment` is on, matching titles may be replaced with DigestiF names. Environments are skipped. Click a head to open at its line. Title bar: **Refresh**.
-
-Explorer **Outline** uses the same scan via a `DocumentSymbolProvider` when DigestiF is not running; when DigestiF is up, DigestiF owns Explorer Outline (names still normalized by ConTeXt Tools middleware).
-
-## Project structure wizard
-
-**ConTeXt: New Project Structure…** scaffolds the simplest structure that matches the job (wiki *Project and file management* §1): single document; document + environment; product + components; or project tier (several products — compile each product, not the `\startproject` file).
-
-After create: writes `.context/structure.json` (tier, optional `layout`, optional `documentStub` / `documentMetadata`, compile root), opens the compile root, sets `context.rootFile` when enabled, refreshes the Project view, and may offer `files.associations["*.tex"] = "context"`. Scaffolds use `.tex` only and do not insert `% !TEX root`.
-
-On the names step (tiers other than single), **Directory layout** is **Flat** (default, wiki §4/§5) or **By role** (`environments/`, product `.tex` at scaffold root or product folders at series root, `components/` with `\usepath`). Absent `layout` means flat; upgrade preserves it.
-
-For **product** and **project** tiers, an optional checkbox includes a `\startdocument` metadata stub in each product file (components stay between `\startdocument` / `\stopdocument`). Metadata is entered as `key=value` lines. Off by default; hidden for `single` / `env-doc` (those already use `\startdocument`).
-
-**ConTeXt: Upgrade Project Structure…** moves a scaffold one rung up when `.context/structure.json` is present.
-
-## Snippets
-
-Built-in snippets for language id **`context`**: structure stubs (`startproduct`, `startcomponent`, …), sectioning (`startdocument`, `startchapter`, …), and common environments (`startitemize`, `startplaceformula`, `starttyping`, …). Each trigger is registered with and without a leading `\`, so accepting after typing `\` does not leave a doubled backslash. Environment-like `\start…` snippets insert a matching `\stop…` with the cursor between them. Load commands (`component`, `environment`) stay one-liners. They appear only when the editor language is `context`.
-
-User/workspace snippets: **Snippets: Configure User Snippets** → **context**, or `.vscode/<name>.code-snippets` with `"scope": "context"`.
-
-## Syntax highlighting
-
-TextMate grammar colors known ConTeXt names from a committed SciTE keyword snapshot. After an LMTX upgrade, run **ConTeXt: Refresh command keywords** and reload, or regenerate from the command line (see [`CONTRIBUTING.md`](CONTRIBUTING.md)). Folding matches `\start<name>` / `\stop<name>` pairs. Build diagnostics appear in the Problems panel.
-
 ## Overlapping extensions
 
 Other extensions that contribute language id `context`, a grammar for that id, or the same ConTeXt filename extensions (`.mkiv`, `.mkxl`, `.mkvi`, `.mklx`, `.mkii`) can override ConTeXt Tools’ grammar or editor features. On activate (and when opening a ConTeXt-like document), ConTeXt Tools lists those extensions once and asks you to disable them manually in the Extensions view. It never disables other extensions itself. Use **Don't show again** or `context.extensionConflict.dontAsk` to suppress the prompt.
 
-## Develop
+## Troubleshooting
 
-See [`CONTRIBUTING.md`](CONTRIBUTING.md). Coding agents: [`AGENTS.md`](AGENTS.md).
+| Symptom | What to check |
+| --- | --- |
+| Build cannot find `context` / `mtxrun` | Set `context.root`, or put the LMTX `bin` directory on `PATH`. Confirm with a terminal `context --version`. |
+| PDF does not appear after build | Open the **ConTeXt** output channel for the job log. Confirm the root file and that a `.pdf` was written next to it. Try **Show PDF** after a successful build. |
+| SyncTeX does nothing | Confirm `context.synctex.enabled`, that a sibling `.synctex` exists for the gated PDF, and that you Ctrl/Cmd+click text (not empty figure areas). |
+| Equation hover fails | Needs LMTX plus `mutool` or Poppler. Read the hover message; set `context.equationPreview.rasterTool` if auto-detect is wrong. |
+| No completion / DigestiF idle | DigestiF is optional. Check **ConTeXt DigestiF**, `context.digestif.enabled`, and `context.digestifPath` / PATH. Language id must be `context` (not `latex`) for ConTeXt tags. |
+| `.tex` files treated as LaTeX | Set `files.associations` for `*.tex` → `context`, or accept the association prompt when offered. |
+| Highlighting looks wrong / another ConTeXt extension wins | See [Overlapping extensions](#overlapping-extensions); disable the other extension manually. |
+| Need more internal detail | Set `context.debugOutput` and read **ConTeXt debug**. |
+
+## Contributing
+
+Developer setup, packaging, and Marketplace publish notes: [`CONTRIBUTING.md`](CONTRIBUTING.md). Coding-agent notes: [`AGENTS.md`](AGENTS.md).
