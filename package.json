@@ -2,7 +2,7 @@
   "name": "context-tools",
   "displayName": "ConTeXt Tools",
   "description": "ConTeXt SyncTeX PDF preview, equation hover preview, DigestiF language server, Document structure outline, TextMate grammar, and snippets",
-  "version": "0.1.56",
+  "version": "0.1.57",
   "publisher": "context-lab",
   "license": "GPL-2.0-only",
   "repository": {
@@ -465,6 +465,7 @@
     "test": "npm run compile && node --test dist/test/**/*.test.js && npm run test:grammar",
     "test:grammar": "vscode-tmgrammar-test -g src/test/grammar/stubs/lua.tmLanguage.json -g src/test/grammar/stubs/xml.tmLanguage.json \"src/test/grammar/*.test.mkiv\" && vscode-tmgrammar-snap -g src/test/grammar/stubs/lua.tmLanguage.json -g src/test/grammar/stubs/xml.tmLanguage.json \"src/test/grammar/snap/*.mkiv\"",
     "handshake:context": "node scripts/digestif-context-handshake.mjs",
+    "smoke:vsix": "node scripts/vsix-smoke.mjs",
     "lint": "tsc -p . --noEmit"
   },
   "devDependencies": {
