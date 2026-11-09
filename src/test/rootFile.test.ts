@@ -41,6 +41,29 @@ describe('rootFile component→product', () => {
     const hit = resolveComponentProduct(comp, compText, [dir]);
     assert.equal(hit, product);
   });
+
+  it('tries ROOT_FILE_EXTENSIONS in order; include-only suffixes are skipped', async () => {
+    const dir = await makeTempDir('context-root-');
+    const comp = path.join(dir, 'chap.tex');
+    const compText = (name: string) => `\\startcomponent chap\n\\product ${name}\n`;
+    fs.writeFileSync(comp, compText('book'));
+
+    fs.writeFileSync(path.join(dir, 'book.mkvi'), '');
+    assert.equal(resolveComponentProduct(comp, compText('book'), []), undefined);
+
+    fs.writeFileSync(path.join(dir, 'book.mkxl'), '');
+    assert.equal(resolveComponentProduct(comp, compText('book'), []), path.join(dir, 'book.mkxl'));
+
+    fs.writeFileSync(path.join(dir, 'book.ctx'), '');
+    assert.equal(resolveComponentProduct(comp, compText('book'), []), path.join(dir, 'book.ctx'));
+
+    fs.writeFileSync(path.join(dir, 'book.tex'), '');
+    assert.equal(resolveComponentProduct(comp, compText('book'), []), path.join(dir, 'book.tex'));
+    assert.equal(
+      resolveComponentProduct(comp, compText('book.mkxl'), []),
+      path.join(dir, 'book.mkxl'),
+    );
+  });
 });
 
 describe('resolveRootFileSetting', () => {

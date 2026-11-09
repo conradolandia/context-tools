@@ -6,8 +6,8 @@ import {
   backwardSync,
   SynctexError,
   EMPTY_BACKWARD_USER_MESSAGE,
-  COARSE_FLOAT_LINE_USER_MESSAGE,
 } from '../synctex/mtxSynctex';
+import { COARSE_FLOAT_LINE_USER_MESSAGE } from '../synctex/synctexBoxes';
 import type { ProjectNode } from '../project/projectModel';
 import { logDebug } from '../outputLog';
 import { getToolchain } from './rootCommands';

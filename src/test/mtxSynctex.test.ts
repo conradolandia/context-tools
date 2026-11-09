@@ -16,26 +16,28 @@ import {
   isInvalidSynctexLogMessage,
   isEmptyReportOutput,
   EMPTY_BACKWARD_USER_MESSAGE,
-  COARSE_FLOAT_LINE_USER_MESSAGE,
   DEFAULT_REPORT_TOLERANCE,
   SNAP_REPORT_TOLERANCE,
   SynctexError,
+  refineSuspiciousBackwardHit,
+  refineForwardHit,
+} from '../synctex/mtxSynctex';
+import {
+  COARSE_FLOAT_LINE_USER_MESSAGE,
   parseSynctexPageBoxes,
   nearestSynctexBox,
   nearestSynctexBoxAboveLine,
-  refineSuspiciousBackwardHit,
   pickForwardSameLineBox,
   synctexFilenamesMatch,
   isSuspiciousFileStartHit,
   distanceToBox,
   FORWARD_EDGE_BAND_FRAC,
   FORWARD_MAX_BOX_PAGE_FRAC,
-  refineForwardHit,
   synctexUnitScaleToPt,
   pickForwardNonEdgeFallbackBox,
   SYNCTEX_SP_PER_PT,
   type SynctexBox,
-} from '../synctex/mtxSynctex';
+} from '../synctex/synctexBoxes';
 
 describe('mtxSynctex parseFindOutput', () => {
   it('parses --direct find output', () => {

@@ -8,6 +8,7 @@ node_modules/**
 dist/test/**
 esbuild.mjs
 scripts/vsix-smoke.mjs
+scripts/digestif-context-handshake.mjs
 tsconfig.json
 .gitignore
 .git/**

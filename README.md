@@ -13,15 +13,17 @@ VS Code / Cursor extension for ConTeXt (LMTX): SyncTeX PDF preview, equation hov
 
 ## Install
 
-**Marketplace.** Search for **ConTeXt Tools** (`context-lab.context-tools`) when the listing is published, or install from the [repository](https://github.com/conradolandia/context-lab) release assets.
+**Marketplace / Open VSX.** Search the Extensions view for **ConTeXt Tools** (id `context-lab.context-tools`) once the listing is live. The VS Code Marketplace and Open VSX (Cursor, VSCodium) get the same build.
 
-**VSIX:**
+**VSIX.** Download one from the [repository](https://github.com/conradolandia/context-lab) release assets, or build it:
 
 ```bash
 npm install && npm run compile && npx @vscode/vsce package
 ```
 
-Then **Extensions: Install from VSIX…** and pick the generated `.vsix`.
+Then **Extensions: Install from VSIX…** and pick the `.vsix`.
+
+**First run.** Set `context.root` if `context` / `mtxrun` are not on `PATH` (see [Settings](#settings)), open a ConTeXt source, and run **ConTeXt: Build and Preview**.
 
 ## Settings
 
@@ -61,6 +63,8 @@ Resolution: absolute `context.contextPath` / `context.mtxrunPath` overrides, the
 | `context.debugOutput` | `false` | Verbose traces on **ConTeXt debug** (viewer, gate, SyncTeX dumps) |
 | `context.digestif.enabled` | `true` | Start DigestiF LSP |
 | `context.digestifPath` | `""` | Absolute DigestiF binary; empty = PATH / luarocks |
+| `context.texAssociation.dontAsk` | `false` | Never prompt to associate `*.tex` with `context` (also set by the prompt's **Don't ask again**) |
+| `context.latexWorkshopConflict.dontAsk` | `false` | Never warn about the LaTeX Workshop language-id conflict (also set by the warning's **Don't show again**) |
 | `context.equationPreview.enabled` | `true` | Hover preview for math under the cursor |
 | `context.equationPreview.environment` | `""` | Preamble for the preview job (User or Workspace; not inferred from Project) |
 | `context.equationPreview.format` | `"png"` | Preferred format (`png` \| `svg`); hover display uses PNG |
