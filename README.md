@@ -1,14 +1,15 @@
 # ConTeXt Tools
 
-VS Code / Cursor extension for ConTeXt (LMTX): SyncTeX PDF preview, DigestiF language server, Project view, Document structure outline, project-structure scaffolding, TextMate grammar, and snippets for the `context` language.
+VS Code / Cursor extension for ConTeXt (LMTX): SyncTeX PDF preview, equation hover preview, DigestiF language server, Project view, Document structure outline, project-structure scaffolding, TextMate grammar, and snippets for the `context` language.
 
 **License:** GNU GPL version 2 only (`GPL-2.0-only`). See [`LICENSE`](LICENSE) and [`NOTICE`](NOTICE). Keyword lists are derived from ConTeXt SciTE data (same GPL-2 regime).
 
 ## Requirements
 
 - VS Code or Cursor
-- LMTX / ConTeXt Standalone for build and SyncTeX
-- DigestiF (optional) for completion, hover, and Explorer Outline enrichment
+- LMTX / ConTeXt Standalone for build, SyncTeX, and equation hover preview
+- MuPDF (`mutool`) or Poppler (`pdftoppm` / `pdftocairo`) for equation hover rasterization
+- DigestiF (optional) for completion, command hover, and Explorer Outline enrichment
 
 ## Install
 
@@ -60,6 +61,15 @@ Resolution: absolute `context.contextPath` / `context.mtxrunPath` overrides, the
 | `context.debugOutput` | `false` | Verbose traces on **ConTeXt debug** (viewer, gate, SyncTeX dumps) |
 | `context.digestif.enabled` | `true` | Start DigestiF LSP |
 | `context.digestifPath` | `""` | Absolute DigestiF binary; empty = PATH / luarocks |
+| `context.equationPreview.enabled` | `true` | Hover preview for math under the cursor |
+| `context.equationPreview.environment` | `""` | Preamble for the preview job (User or Workspace; not inferred from Project) |
+| `context.equationPreview.format` | `"png"` | Preferred format (`png` \| `svg`); hover display uses PNG |
+| `context.equationPreview.maxWidth` | `512` | Max hover image width (px) |
+| `context.equationPreview.maxHeight` | `512` | Max hover image height (px) |
+| `context.equationPreview.timeoutMs` | `15000` | Timeout for the temporary `context --once` job |
+| `context.equationPreview.debounceMs` | `400` | Delay before starting a preview job |
+| `context.equationPreview.rasterTool` | `"auto"` | `auto` \| `mutool` \| `pdftoppm` \| `pdftocairo` |
+| `context.equationPreview.rasterDpi` | `150` | DPI for PNG raster of the TEXpage PDF |
 
 ```json
 {
@@ -68,6 +78,14 @@ Resolution: absolute `context.contextPath` / `context.mtxrunPath` overrides, the
 ```
 
 Home installs are often `$HOME/context`.
+
+### Equation hover preview
+
+Hover over `\startformula`…`\stopformula` (and other `\start…formula` blocks), `$…$` / `$$…$$`, or a non-empty selection that contains the cursor. The extension runs a temporary `\startTEXpage` job with `context --once --batch --noconsole` (separate from the document build queue), rasters the PDF, and shows a clamped image in the hover. Links in the hover open a save dialog for PDF, SVG, or PNG at natural size.
+
+`context.equationPreview.environment` is the only preamble: put `\environment…`, typescripts, macros, and setups there by hand. Use **User** settings for a personal default and **Workspace** settings per project (Workspace wins). Empty means stock ConTeXt math only; nothing is read from Project / root / auto `\environment`.
+
+Needs LMTX (`context`) plus MuPDF or Poppler on `PATH` (or reachable via `context.root`). Missing raster tools produce an explicit hover message.
 
 ### Main (root) file
 

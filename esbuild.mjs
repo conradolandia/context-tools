@@ -53,6 +53,8 @@ const testOptions = {
     join(__dirname, 'src/test/headScan.test.ts'),
     join(__dirname, 'src/test/outlineAggregate.test.ts'),
     join(__dirname, 'src/test/figureHoverMarkdown.test.ts'),
+    join(__dirname, 'src/test/extractMath.test.ts'),
+    join(__dirname, 'src/test/equationPreviewCacheKey.test.ts'),
     join(__dirname, 'src/test/projectModel.test.ts'),
     join(__dirname, 'src/test/projectTreeIds.test.ts'),
     join(__dirname, 'src/test/projectManager.test.ts'),

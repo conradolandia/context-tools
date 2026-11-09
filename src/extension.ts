@@ -48,9 +48,10 @@ import {
   handlePdfClick,
 } from './extension/synctexCommands';
 import { registerBuildModesUi } from './extension/buildModesCommands';
+import { registerEquationPreview } from './equationPreview/register';
 
 /** Bump when shipping a SyncTeX/viewer/LSP/diagnostics/project-view behavior change users must verify in Output. */
-export const BUILD_ID = 'document-outline-a';
+export const BUILD_ID = 'equation-hover-preview-a';
 
 export function activate(context: vscode.ExtensionContext): void {
   runtime.extensionContext = context;
@@ -223,6 +224,10 @@ export function activate(context: vscode.ExtensionContext): void {
   registerProjectManager(context, {
     output: runtime.output,
     refreshProjectView: () => projectView.refresh(),
+  });
+
+  registerEquationPreview(context, {
+    resolveToolchain: getToolchain,
   });
 
   const pkgPath = path.join(context.extensionPath, 'package.json');
