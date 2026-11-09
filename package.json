@@ -1,8 +1,8 @@
 {
   "name": "context-tools",
   "displayName": "ConTeXt Tools",
-  "description": "ConTeXt SyncTeX PDF preview, DigestiF language server, Document structure outline, TextMate grammar, and snippets",
-  "version": "0.1.53",
+  "description": "ConTeXt SyncTeX PDF preview, equation hover preview, DigestiF language server, Document structure outline, TextMate grammar, and snippets",
+  "version": "0.1.54",
   "publisher": "context-lab",
   "license": "GPL-2.0-only",
   "repository": {
@@ -168,6 +168,18 @@
       {
         "command": "context.projectManager.upgrade",
         "title": "ConTeXt: Upgrade Project Structure…"
+      },
+      {
+        "command": "context.equationPreview.savePdf",
+        "title": "ConTeXt: Save Equation Preview PDF"
+      },
+      {
+        "command": "context.equationPreview.saveSvg",
+        "title": "ConTeXt: Save Equation Preview SVG"
+      },
+      {
+        "command": "context.equationPreview.savePng",
+        "title": "ConTeXt: Save Equation Preview PNG"
       }
     ],
     "menus": {
@@ -383,6 +395,64 @@
           "type": "boolean",
           "default": false,
           "description": "If true, never warn when LaTeX Workshop (James-Yu.latex-workshop) is enabled and also contributes language id context. Also set via the warning's Don't show again action (global state)."
+        },
+        "context.equationPreview.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show a ConTeXt-typeset hover preview when the cursor is on math (\\startformula…\\stopformula, dollar math, or the active selection)."
+        },
+        "context.equationPreview.environment": {
+          "type": "string",
+          "default": "",
+          "editPresentation": "multilineText",
+          "description": "ConTeXt preamble inserted before \\startTEXpage in the equation preview job (macros, \\environment…, fonts, setups). Empty = stock math only. Set as User or Workspace; Workspace overrides User. Not inferred from the Project."
+        },
+        "context.equationPreview.format": {
+          "type": "string",
+          "default": "png",
+          "enum": ["png", "svg"],
+          "description": "Preferred hover image format. Hover display uses PNG (SVG in Markdown hover is unreliable); svg still builds a vector export for Save SVG."
+        },
+        "context.equationPreview.maxWidth": {
+          "type": "number",
+          "default": 512,
+          "minimum": 32,
+          "maximum": 2048,
+          "description": "Maximum hover preview width in pixels (aspect ratio preserved)."
+        },
+        "context.equationPreview.maxHeight": {
+          "type": "number",
+          "default": 512,
+          "minimum": 32,
+          "maximum": 2048,
+          "description": "Maximum hover preview height in pixels (aspect ratio preserved)."
+        },
+        "context.equationPreview.timeoutMs": {
+          "type": "number",
+          "default": 15000,
+          "minimum": 1000,
+          "maximum": 120000,
+          "description": "Timeout (ms) for the temporary context --once equation job."
+        },
+        "context.equationPreview.debounceMs": {
+          "type": "number",
+          "default": 400,
+          "minimum": 0,
+          "maximum": 5000,
+          "description": "Delay (ms) after hover before starting an equation preview job."
+        },
+        "context.equationPreview.rasterTool": {
+          "type": "string",
+          "default": "auto",
+          "enum": ["auto", "mutool", "pdftoppm", "pdftocairo"],
+          "description": "PDF→image tool for equation hover. auto tries mutool, then pdftoppm, then pdftocairo."
+        },
+        "context.equationPreview.rasterDpi": {
+          "type": "number",
+          "default": 150,
+          "minimum": 36,
+          "maximum": 600,
+          "description": "DPI for PNG rasterization of the equation TEXpage PDF (save PNG uses the same natural raster)."
         }
       }
     }
