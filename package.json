@@ -2,7 +2,7 @@
   "name": "context-tools",
   "displayName": "ConTeXt Tools",
   "description": "ConTeXt SyncTeX PDF preview, equation hover preview, DigestiF language server, Document structure outline, TextMate grammar, and snippets",
-  "version": "0.1.57",
+  "version": "0.1.58",
   "publisher": "context-lab",
   "license": "GPL-2.0-only",
   "repository": {
@@ -17,8 +17,20 @@
     "vscode": "^1.85.0"
   },
   "categories": [
-    "Other",
+    "Programming Languages",
     "Snippets"
+  ],
+  "keywords": [
+    "context",
+    "lmtx",
+    "luametatex",
+    "tex",
+    "mkiv",
+    "mkxl",
+    "typesetting",
+    "synctex",
+    "pdf",
+    "digestif"
   ],
   "activationEvents": [
     "onLanguage:tex"
