@@ -2,7 +2,7 @@
   "name": "context-tools",
   "displayName": "ConTeXt Tools",
   "description": "ConTeXt SyncTeX PDF preview, equation hover preview, DigestiF language server, Document structure outline, TextMate grammar, and snippets",
-  "version": "0.1.58",
+  "version": "0.1.59",
   "publisher": "context-lab",
   "license": "GPL-2.0-only",
   "repository": {
@@ -403,10 +403,10 @@
           "default": false,
           "description": "If true, never prompt to associate *.tex with the ConTeXt language for DigestiF. Also set via the prompt's Don't ask again action (workspace state)."
         },
-        "context.latexWorkshopConflict.dontAsk": {
+        "context.extensionConflict.dontAsk": {
           "type": "boolean",
           "default": false,
-          "description": "If true, never warn when LaTeX Workshop (James-Yu.latex-workshop) is enabled and also contributes language id context. Also set via the warning's Don't show again action (global state)."
+          "description": "If true, never warn when other installed extensions contribute language id context or the same ConTeXt file extensions (.mkiv, .mkxl, …). Also set via the warning's Don't show again action (global state)."
         },
         "context.equationPreview.enabled": {
           "type": "boolean",

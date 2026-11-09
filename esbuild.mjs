@@ -59,7 +59,7 @@ const testOptions = {
     join(__dirname, 'src/test/projectTreeIds.test.ts'),
     join(__dirname, 'src/test/projectManager.test.ts'),
     join(__dirname, 'src/test/generateKeywords.test.ts'),
-    join(__dirname, 'src/test/latexWorkshopConflict.test.ts'),
+    join(__dirname, 'src/test/extensionConflict.test.ts'),
     join(__dirname, 'src/test/pdfPanelTitle.test.ts'),
     join(__dirname, 'src/test/vsixSmoke.test.ts'),
   ],
