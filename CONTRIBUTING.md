@@ -56,8 +56,8 @@ CI publish uses [Trusted Publishing](https://code.visualstudio.com/api/working-w
 
 **Triggers (not on every push to `main`).**
 
-- GitHub Release published (`release: types: [published]`), with tag `vX.Y.Z` or `X.Y.Z` matching `package.json` `version`
-- Manual **Actions → Publish Marketplace → Run workflow**, with `confirm_version` equal to `package.json` `version`
+- GitHub Release published (`release: types: [published]`), with tag `vX.Y.Z` or `X.Y.Z` matching `package.json` `version`. A GitHub Release marked **pre-release** passes `vsce publish --oidc --pre-release` (Marketplace pre-release). A non-pre-release GitHub Release publishes as a normal Marketplace release.
+- Manual **Actions → Publish Marketplace → Run workflow**, with `confirm_version` equal to `package.json` `version`. Optional `pre_release` input (default false) controls Marketplace pre-release vs release.
 
 **One-time Marketplace setup (publisher `AndresConradoMontoya`).**
 
