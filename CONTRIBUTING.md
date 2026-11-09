@@ -65,5 +65,5 @@ npx vscode-tmgrammar-snap -u \
 - Target `main`; keep scope focused.
 - Run `npm run lint` and `npm test` before review.
 - Language id stays `context`; do not claim `*.tex` globally.
-- LaTeX Workshop: soft-warn only.
+- Overlapping extensions (language id / ConTeXt file extensions): soft-warn only; never disable other extensions from code.
 - License: GPL-2.0-only; keep [`NOTICE`](NOTICE) accurate when regenerating keywords.

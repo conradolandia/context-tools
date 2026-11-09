@@ -18,7 +18,7 @@ src/projectManager/           New Project Structure wizard
 src/links/                    Document links + figure hover
 src/folding/                  \start…/\stop… folding + mismatch diagnostics
 src/syntax/                   Refresh keywords command
-src/compat/                   LaTeX Workshop language-id conflict soft-warn
+src/compat/                   Overlapping-extension conflict soft-warn (manual disable only)
 media/viewer/                 Webview HTML/JS/CSS (PDF.js)
 syntaxes/                     TextMate grammar + keyword snapshot
 scripts/                      generate-context-keywords, digestif handshake
@@ -32,7 +32,7 @@ Build path: `buildController` → `spawnContextBuild` → artifact gate → view
 2. **DigestiF must not block build or Document structure.** Launch is async; failures log to the DigestiF channel. Build / preview / SyncTeX / outline scan proceed regardless. DigestiF titles are optional enrichment only.
 3. **Language id `context` for DigestiF ConTeXt mode.** DigestiF maps `tex`/`latex` → LaTeX tags.
 4. **Do not claim `*.tex` globally** in `contributes.languages`. Offer workspace `files.associations` via the existing prompt only.
-5. **LaTeX Workshop conflict: soft-warn only.** Never auto-disable without the user’s chosen action. Skip the modal in `ExtensionMode.Development`.
+5. **Extension conflict: soft-warn only.** Detect overlapping language / file-extension / grammar contributions; list them for manual disable. Never disable other extensions from code. Skip the modal in `ExtensionMode.Development`.
 6. **No user PII in docs or examples.** Prefer `$CONTEXT_ROOT`, `$HOME/context`, `/opt/context`, or OS temp dirs.
 7. **GPL-2.0-only.** Keep [`NOTICE`](NOTICE) accurate when regenerating keywords.
 
@@ -42,7 +42,7 @@ Build path: `buildController` → `spawnContextBuild` → artifact gate → view
 npm run lint && npm test
 ```
 
-Relevant unit areas: `buildDigestifIsolation`, `latexWorkshopConflict`, `digestif*`, `mtxSynctex`, `projectModel`, `headScan`, `outlineAggregate`, `parseLog`, grammar fixtures under `src/test/grammar/`. Optional: `CONTEXT_ROOT=… npm run handshake:context`.
+Relevant unit areas: `buildDigestifIsolation`, `extensionConflict`, `digestif*`, `mtxSynctex`, `projectModel`, `headScan`, `outlineAggregate`, `parseLog`, grammar fixtures under `src/test/grammar/`. Optional: `CONTEXT_ROOT=… npm run handshake:context`.
 
 ## Caution
 
@@ -51,7 +51,7 @@ Relevant unit areas: `buildDigestifIsolation`, `latexWorkshopConflict`, `digesti
 | `src/build/spawnContext.ts` stdio | Keep stdin `'ignore'`; POSIX `detached` for cancel group kill |
 | DigestiF vs build queue | No await of DigestiF from build/preview/SyncTeX |
 | `package.json` languages / grammars | Language id `context`; no global `*.tex` |
-| `src/compat/latexWorkshopConflict*` | Soft-warn policy only |
+| `src/compat/extensionConflict*` | Soft-warn + manual disable only; no auto-disable |
 | `syntaxes/context-keywords.json` | Regenerate via `npm run generate:keywords` |
 | `media/viewer/` | Easy to regress large-PDF first-page latency |
 

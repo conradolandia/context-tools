@@ -22,7 +22,7 @@ import { registerDocumentOutline } from './outline/outlineTree';
 import { registerOutlineSymbols } from './outline/outlineSymbols';
 import { registerProjectManager } from './projectManager/projectManagerPanel';
 import { refreshCommandKeywords } from './syntax/refreshKeywords';
-import { maybeWarnLatexWorkshopConflict } from './compat/latexWorkshopConflict';
+import { maybeWarnExtensionConflict } from './compat/extensionConflict';
 import { initOutputLog, logDebug, logUser } from './outputLog';
 import { runtime } from './extension/state';
 import {
@@ -51,7 +51,7 @@ import { registerBuildModesUi } from './extension/buildModesCommands';
 import { registerEquationPreview } from './equationPreview/register';
 
 /** Bump when shipping a SyncTeX/viewer/LSP/diagnostics/project-view behavior change users must verify in Output. */
-export const BUILD_ID = 'marketplace-listing-a';
+export const BUILD_ID = 'extension-conflict-a';
 
 export function activate(context: vscode.ExtensionContext): void {
   runtime.extensionContext = context;
@@ -194,7 +194,7 @@ export function activate(context: vscode.ExtensionContext): void {
       if (!isContextLikeDocument(doc)) {
         return;
       }
-      void maybeWarnLatexWorkshopConflict(context, logUser);
+      void maybeWarnExtensionConflict(context, logUser);
     }),
   );
 
@@ -249,7 +249,7 @@ export function activate(context: vscode.ExtensionContext): void {
     logUser(`[root] ${r.rootFile} (rule=${r.rule})`);
   }
   runtime.digestif.scheduleStart();
-  void maybeWarnLatexWorkshopConflict(context, logUser);
+  void maybeWarnExtensionConflict(context, logUser);
   void maybeOpenExistingOnActivate();
   runtime.output.show(true);
 }
