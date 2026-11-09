@@ -41,6 +41,8 @@ npx @vscode/vsce package
 
 Output is a `.vsix` in the repo root (do not commit it).
 
+`npm run smoke:vsix` packages to a temp dir and fails unless the VSIX contains `dist/extension.js`, `media/viewer/pdfjs/`, `LICENSE`, and `NOTICE` (`-- --vsix <file>` checks an existing package; needs Node 22+ for vsce 4).
+
 ## Refresh command keywords
 
 ```bash
