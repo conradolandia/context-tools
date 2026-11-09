@@ -2,17 +2,17 @@
   "name": "context-tools",
   "displayName": "ConTeXt Tools",
   "description": "ConTeXt SyncTeX PDF preview, equation hover preview, DigestiF language server, Document structure outline, TextMate grammar, and snippets",
-  "version": "0.1.60",
+  "version": "0.1.61",
   "publisher": "AndresConradoMontoya",
   "license": "GPL-2.0-only",
   "repository": {
     "type": "git",
-    "url": "https://github.com/conradolandia/context-lab.git"
+    "url": "https://github.com/conradolandia/context-tools.git"
   },
   "bugs": {
-    "url": "https://github.com/conradolandia/context-lab/issues"
+    "url": "https://github.com/conradolandia/context-tools/issues"
   },
-  "homepage": "https://github.com/conradolandia/context-lab#readme",
+  "homepage": "https://github.com/conradolandia/context-tools#readme",
   "engines": {
     "vscode": "^1.85.0"
   },

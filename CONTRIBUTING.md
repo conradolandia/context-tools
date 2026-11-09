@@ -6,7 +6,7 @@ Developer workflow. End-user install and settings: [`README.md`](README.md). Age
 
 ```bash
 git clone <repo-url>
-cd context-lab   # or your local checkout name
+cd context-tools   # or your local checkout name
 npm install
 ```
 
