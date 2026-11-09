@@ -51,7 +51,7 @@ import { registerBuildModesUi } from './extension/buildModesCommands';
 import { registerEquationPreview } from './equationPreview/register';
 
 /** Bump when shipping a SyncTeX/viewer/LSP/diagnostics/project-view behavior change users must verify in Output. */
-export const BUILD_ID = 'extension-conflict-b';
+export const BUILD_ID = 'publisher-andres-a';
 
 export function activate(context: vscode.ExtensionContext): void {
   runtime.extensionContext = context;
