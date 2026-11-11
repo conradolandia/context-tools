@@ -78,7 +78,38 @@ CI publish uses [Trusted Publishing](https://code.visualstudio.com/api/working-w
 
 **Secrets.** None required for Trusted Publishing. Do not add `VSCE_PAT` for this workflow.
 
-Open VSX publish is out of scope for this workflow.
+## Publish (Open VSX)
+
+CI publish uses [Open VSX Trusted Publishing](https://github.com/eclipse-openvsx/openvsx/wiki/Trusted-Publishing) (`npx ovsx publish --trusted-publishing`). No long-lived Open VSX PAT in repository secrets.
+
+**Where Actions run.** Same constraint as Marketplace: OIDC only on GitHub Actions at `conradolandia/context-tools`. The workflow file is [`.github/workflows/publish-openvsx.yml`](.github/workflows/publish-openvsx.yml). Mirror or push from Origin to GitHub before publishing.
+
+**Triggers (not on every push to `main`).**
+
+- GitHub Release published (`release: types: [published]`), with tag `vX.Y.Z` or `X.Y.Z` matching `package.json` `version`.
+- Manual **Actions → Publish Open VSX → Run workflow**, with `confirm_version` equal to `package.json` `version`.
+
+This workflow does not pass pre-release flags. Pre-releases are not used for Open VSX.
+
+**One-time Open VSX setup (namespace `AndresConradoMontoya`).**
+
+Prerequisite: at least one active version on Open VSX (0.1.64 was published with a PAT). You must own the namespace (contributor is not enough) and have signed the Publisher Agreement.
+
+1. Open [Open VSX Trusted Publishers](https://open-vsx.org/user-settings/trusted-publishers).
+2. Pick namespace **AndresConradoMontoya** and extension **context-tools**.
+3. Choose GitHub Actions and enter:
+
+| Field | Value |
+| --- | --- |
+| Organization or User name | `conradolandia` |
+| Repository name | `context-tools` |
+| Workflow filename | `publish-openvsx.yml` |
+| Environment name | leave empty (workflow does not set a GitHub Environment) |
+
+4. Confirm. Do not rename the workflow file without deleting and recreating this registration.
+5. Optional later: add a GitHub Environment with required reviewers, set `environment:` on the publish job, and put that exact name in the Open VSX **Environment name** field.
+
+**Secrets.** None required for Trusted Publishing. Do not add `OVSX_PAT` for this workflow. An `OVSX_PAT` in the job environment would take precedence over Trusted Publishing.
 
 ## Refresh command keywords
 

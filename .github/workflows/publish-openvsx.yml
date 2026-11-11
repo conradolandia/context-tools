@@ -1,0 +1,95 @@
+# Publish AndresConradoMontoya.context-tools to Open VSX via Trusted Publishing
+# (GitHub Actions OIDC). No Open VSX PAT secret.
+#
+# Open VSX Trusted Publishers registration must match this file's name exactly:
+#   Organization or User name: conradolandia
+#   Repository name:           context-tools
+#   Workflow filename:         publish-openvsx.yml
+#   Environment name:          (leave empty unless you add a GitHub Environment below)
+#
+# Prerequisite: at least one active version on Open VSX (0.1.64 was published
+# with a PAT). Trusted Publishing is per extension and requires namespace ownership.
+#
+# OIDC only works on GitHub Actions for https://github.com/conradolandia/context-tools.
+# Cursor Origin remotes do not issue Open VSX OIDC tokens. Keep this workflow
+# on the GitHub repo (mirror/push from Origin if needed) before publishing.
+#
+# Do not rename this file without updating the Open VSX trusted publisher.
+
+name: Publish Open VSX
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      confirm_version:
+        description: package.json version to publish (must match exactly, e.g. 0.1.64)
+        required: true
+        type: string
+
+# Least privilege at workflow level; publish job elevates id-token for OIDC.
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-openvsx
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Compile (vscode:prepublish)
+        run: npm run compile
+
+      - name: Confirm version matches workflow_dispatch input
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          CONFIRM_VERSION: ${{ inputs.confirm_version }}
+        run: |
+          set -euo pipefail
+          pkg="$(node -p "require('./package.json').version")"
+          if [ "$pkg" != "$CONFIRM_VERSION" ]; then
+            echo "package.json version ($pkg) != confirm_version ($CONFIRM_VERSION)" >&2
+            exit 1
+          fi
+          echo "Publishing version $pkg"
+
+      - name: Confirm version matches release tag
+        if: github.event_name == 'release'
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          set -euo pipefail
+          pkg="$(node -p "require('./package.json').version")"
+          tag="$RELEASE_TAG"
+          tag="${tag#v}"
+          if [ "$pkg" != "$tag" ]; then
+            echo "package.json version ($pkg) != release tag version ($tag from $RELEASE_TAG)" >&2
+            exit 1
+          fi
+          echo "Publishing version $pkg from release $RELEASE_TAG"
+
+      - name: VSIX smoke
+        run: npm run smoke:vsix
+
+      # Open VSX Trusted Publishing: ovsx exchanges the Actions OIDC token for a
+      # short-lived publish token. No OVSX_PAT. Pre-releases are not used.
+      - name: Publish to Open VSX (Trusted Publishing)
+        run: npx --yes ovsx publish --trusted-publishing
