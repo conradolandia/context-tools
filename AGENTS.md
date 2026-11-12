@@ -2,7 +2,9 @@
 
 Coding-agent notes for this repo. Human contributor setup: [`CONTRIBUTING.md`](CONTRIBUTING.md). End-user docs: [`README.md`](README.md).
 
-`README.md` is for extension users only (install, features, settings, troubleshooting). Put F5 / vsce / Trusted Publishing / packaging in CONTRIBUTING. Put architecture, invariants, and edit caution here. Do not grow the README with agent or LLM-oriented guidance.
+`README.md` is for extension users only (install, features, settings, troubleshooting). Put F5 / vsce / packaging in CONTRIBUTING. Put architecture, invariants, and edit caution here. Do not grow the README with agent or LLM-oriented guidance. Do not put Marketplace / Open VSX publish runbooks in CONTRIBUTING; those live in the workflow files under `.github/workflows/` only.
+
+If you push both to Cursor / Origin and to public GitHub, keep remotes distinct (`origin` vs `upstream`). Use `$HOME/context`, `/opt/context`, or `$CONTEXT_ROOT` in docs and examples — not personal machine paths.
 
 ## Architecture map
 

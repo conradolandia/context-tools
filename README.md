@@ -193,4 +193,4 @@ Other extensions that contribute language id `context`, a grammar for that id, o
 
 ## Contributing
 
-Developer setup, packaging, and Marketplace publish notes: [`CONTRIBUTING.md`](CONTRIBUTING.md). Coding-agent notes: [`AGENTS.md`](AGENTS.md).
+Developer setup and packaging: [`CONTRIBUTING.md`](CONTRIBUTING.md). Coding-agent notes: [`AGENTS.md`](AGENTS.md).
