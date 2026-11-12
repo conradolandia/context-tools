@@ -1,21 +1,23 @@
 # ConTeXt Tools
 
-VS Code / Cursor extension for ConTeXt (LMTX). It builds your document, shows the PDF with SyncTeX, and adds Project / Document structure views, equation hover preview, optional DigestiF language support, TextMate highlighting, and snippets for the `context` language.
+VS Code (and clones) extension for ConTeXt (LMTX). It builds your document, shows the PDF with SyncTeX, and adds Project / Document structure views, equation hover preview, optional DigestiF language support, TextMate highlighting, and snippets for the `context` language.
 
 **License:** GNU GPL version 2 only (`GPL-2.0-only`). See [`LICENSE`](LICENSE) and [`NOTICE`](NOTICE). Keyword lists are derived from ConTeXt SciTE data (same GPL-2 regime).
 
 ## Requirements
 
-- VS Code or Cursor
+- VS Code or any other clone (Cursor, Antigravity, Codium, etc.)
 - [LMTX / ConTeXt Standalone](https://wiki.contextgarden.net/ConTeXt_Standalone) for build, SyncTeX, and equation hover preview
 - MuPDF (`mutool`) or Poppler (`pdftoppm` / `pdftocairo`) for equation hover rasterization
-- DigestiF (optional) for completion, command hover, and Explorer Outline enrichment
+- [DigestiF](https://github.com/astoff/digestif) (optional) for completion, command hover, and Explorer Outline enrichment. This must be a standalone Digestif, not the [Digestif vscode extension for VSCode](https://github.com/flying-sheep/digestif-vscode) (I was not able to make it work with it. If you find out how to make it work with the Digestif VSCode extension, feel free to make a PR).
 
 ## Install
 
-**Marketplace / Open VSX.** Search the Extensions view for **ConTeXt Tools** (id `AndresConradoMontoya.context-tools`) once the listing is live. The same extension id is intended for the VS Code Marketplace and Open VSX (Cursor, VSCodium).
+**Marketplace / Open VSX.** Search the Extensions view for **ConTeXt Tools** (id `AndresConradoMontoya.context-tools`). The same extension id is intended for the VS Code Marketplace and Open VSX (Cursor, VSCodium).
 
-**VSIX.** Download a `.vsix` from the [GitHub releases](https://github.com/conradolandia/context-tools/releases) page when available, then use **Extensions: Install from VSIX…**. To build a VSIX from source, see [`CONTRIBUTING.md`](CONTRIBUTING.md).
+**VSIX.** Download a `.vsix` from the [GitHub releases](https://github.com/conradolandia/context-tools/releases) page when available, then use **Extensions: Install from VSIX…**.
+
+To build a VSIX from source, see [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
 ## First run
 
